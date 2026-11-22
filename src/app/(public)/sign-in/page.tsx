@@ -23,14 +23,21 @@ export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const [slowServer, setSlowServer] = useState(false);
 
   useEffect(() => {
-    if (user && !loading) router.replace(authRedirect(redirect, user.role));
+    if (user && !loading) {
+      setRedirecting(true);
+      router.replace(authRedirect(redirect, user.role));
+    }
   }, [user, loading, redirect, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
+    setSlowServer(false);
+    const slowTimer = setTimeout(() => setSlowServer(true), 6000);
 
     try {
       const { error } = await authClient.signIn.email({ email, password });
@@ -43,11 +50,14 @@ export default function SignInPage() {
       const profile = await completeSignIn(email);
 
       toast.success('Signed in successfully');
+      setRedirecting(true);
       router.replace(authRedirect(redirect, profile.role));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not sign in. Please try again.');
     } finally {
+      clearTimeout(slowTimer);
       setSubmitting(false);
+      setSlowServer(false);
     }
   }
 
@@ -82,9 +92,14 @@ export default function SignInPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? 'Signing in...' : 'Sign In'}
+          <Button type="submit" className="w-full" disabled={submitting || redirecting}>
+            {redirecting ? 'Redirecting to your dashboard...' : submitting ? 'Signing in...' : 'Sign In'}
           </Button>
+          {submitting && slowServer && (
+            <p className="text-center text-xs text-muted-foreground">
+              The server is waking up after being idle, this can take up to a minute on the first try.
+            </p>
+          )}
         </form>
 
         <div className="flex items-center gap-3">
