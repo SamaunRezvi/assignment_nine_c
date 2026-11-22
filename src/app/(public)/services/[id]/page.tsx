@@ -1,9 +1,12 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin, Clock, Wrench } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { RequestRepairGate } from '@/components/shared/request-repair-gate';
+import { RatingStars } from '@/components/shared/rating-stars';
+import { VerifiedBadge } from '@/components/shared/verified-badge';
 import { formatCurrency } from '@/lib/helpers';
 import type { Service } from '@/lib/types';
 
@@ -34,6 +37,11 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
           <div>
             <Badge className="mb-3">{service.category}</Badge>
             <h1 className="text-3xl font-bold tracking-tight">{service.title}</h1>
+            {service.averageRating !== undefined && (
+              <div className="mt-2">
+                <RatingStars rating={service.averageRating} reviewCount={service.reviewCount} size="md" />
+              </div>
+            )}
           </div>
           <p className="leading-relaxed text-muted-foreground">{service.description}</p>
 
@@ -73,7 +81,15 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
 
           <Card className="space-y-2 p-6">
             <p className="text-xs font-semibold uppercase text-muted-foreground">Technician</p>
-            <p className="text-lg font-semibold">{service.technicianName}</p>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/technicians/${encodeURIComponent(service.technicianEmail)}`}
+                className="text-lg font-semibold hover:text-primary hover:underline"
+              >
+                {service.technicianName}
+              </Link>
+              {service.isVerified && <VerifiedBadge />}
+            </div>
             <p className="text-sm text-muted-foreground">{service.serviceArea}</p>
           </Card>
         </div>
