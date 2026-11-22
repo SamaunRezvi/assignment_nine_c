@@ -22,7 +22,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
 
-    if (pathname !== '/dashboard/profile' && !pathname.startsWith(dashboardPathForRole(user.role))) {
+    const sharedRoute = pathname === '/dashboard/profile' || pathname.startsWith('/dashboard/bookings/');
+    if (!sharedRoute && !pathname.startsWith(dashboardPathForRole(user.role))) {
       router.replace(dashboardPathForRole(user.role));
     }
   }, [loading, error, user, pathname, router]);

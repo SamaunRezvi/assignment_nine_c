@@ -155,6 +155,9 @@ export default function CustomerBookingsPage() {
                             {booking.rating}
                           </span>
                         )}
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/dashboard/bookings/${booking._id}`}>Open</Link>
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
