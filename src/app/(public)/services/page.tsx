@@ -19,6 +19,7 @@ async function getServices(searchParams: Record<string, string | undefined>): Pr
   if (searchParams.search) params.set('search', searchParams.search);
   if (searchParams.category) params.set('category', searchParams.category);
   if (searchParams.serviceMode) params.set('serviceMode', searchParams.serviceMode);
+  if (searchParams.area) params.set('area', searchParams.area);
   if (searchParams.sort) params.set('sort', searchParams.sort);
   params.set('page', searchParams.page ?? '1');
   params.set('limit', '12');

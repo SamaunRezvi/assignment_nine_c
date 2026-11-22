@@ -15,6 +15,8 @@ import { useState } from 'react';
 
 const SERVICE_MODES = ['Home Visit', 'Shop Drop-off'];
 
+const AREAS = ['Mirpur, Dhaka', 'Dhanmondi, Dhaka'];
+
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
   { value: 'price-asc', label: 'Price: Low to High' },
@@ -44,7 +46,7 @@ export function ServiceFilters() {
   }
 
   return (
-    <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       <form onSubmit={handleSearchSubmit} className="relative sm:col-span-2 lg:col-span-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -78,6 +80,20 @@ export function ServiceFilters() {
           {SERVICE_MODES.map((m) => (
             <SelectItem key={m} value={m}>
               {m}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select value={searchParams.get('area') ?? 'all'} onValueChange={(v) => updateParam('area', v)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Area" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Areas</SelectItem>
+          {AREAS.map((a) => (
+            <SelectItem key={a} value={a}>
+              {a}
             </SelectItem>
           ))}
         </SelectContent>
