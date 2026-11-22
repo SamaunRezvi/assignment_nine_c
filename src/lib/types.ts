@@ -80,6 +80,7 @@ export interface Booking {
   problemDescription: string;
   status: BookingStatus;
   finalAmount: number;
+  completionPhoto?: string;
   paymentStatus: PaymentStatus;
   statusHistory?: StatusHistoryEntry[];
   rating?: number;

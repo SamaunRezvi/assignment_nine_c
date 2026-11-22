@@ -73,6 +73,15 @@ export function BookingDetailDialog({ booking, viewerRole, onOpenChange }: Booki
               <p className="whitespace-pre-wrap break-words">{booking.problemDescription}</p>
             </div>
 
+            {booking.completionPhoto && (
+              <div className="space-y-1 text-sm">
+                <p className="text-muted-foreground">Completion Photo</p>
+                <div className="relative h-40 w-full overflow-hidden rounded-lg bg-muted">
+                  <Image src={booking.completionPhoto} alt="Completed job" fill className="object-cover" />
+                </div>
+              </div>
+            )}
+
             {booking.rating && (
               <div className="space-y-1 text-sm">
                 <p className="text-muted-foreground">Customer Rating</p>

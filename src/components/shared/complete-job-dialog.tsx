@@ -12,7 +12,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ImageUpload } from '@/components/shared/image-upload';
 import { api } from '@/lib/api-client';
+import { uploadToImgBB } from '@/lib/imgbb';
 import type { Booking } from '@/lib/types';
 
 export function CompleteJobDialog({
@@ -27,6 +29,7 @@ export function CompleteJobDialog({
   onCompleted: () => void;
 }) {
   const [finalAmount, setFinalAmount] = useState(String(booking.basePrice));
+  const [photo, setPhoto] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,9 +42,12 @@ export function CompleteJobDialog({
 
     setSubmitting(true);
     try {
+      const completionPhoto = photo ? await uploadToImgBB(photo) : undefined;
+
       await api.patch(`/api/bookings/${booking._id}/status`, {
         status: 'completed',
         finalAmount: Number(finalAmount),
+        ...(completionPhoto ? { completionPhoto } : {}),
       });
       toast.success('Job marked as completed');
       onOpenChange(false);
@@ -71,6 +77,14 @@ export function CompleteJobDialog({
               onChange={(e) => setFinalAmount(e.target.value)}
             />
           </div>
+          <ImageUpload
+            id="completion-photo"
+            label="Completion Photo (optional)"
+            value={photo}
+            onChange={setPhoto}
+            alt="Completed job"
+            disabled={submitting}
+          />
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">
               {submitting ? 'Saving...' : 'Mark Completed'}
