@@ -4,7 +4,7 @@ const now = new Date().toISOString();
 const service = {
   _id: '507f1f77bcf86cd799439011', title: 'Professional laptop and smartphone display diagnosis and replacement', category: 'Laptop & PC',
   description: 'Careful diagnostics and replacement with clear pricing. '.repeat(8), image: 'https://i.ibb.co/audit/photo.png',
-  basePrice: 60, estimatedDuration: '2–3 working days', serviceMode: 'Home Visit', serviceArea: 'Ashulia, Savar, Dhaka',
+  basePrice: 60, estimatedDuration: '2 to 3 working days', serviceMode: 'Home Visit', serviceArea: 'Ashulia, Savar, Dhaka',
   technicianName: 'Rafiq Hasan', technicianEmail: 'technician@example.test', approvalStatus: 'approved', isAvailable: true,
   averageRating: 4.8, reviewCount: 12, isVerified: true, createdAt: now,
 };
@@ -18,7 +18,7 @@ const bookings = ['requested', 'accepted', 'in-progress', 'completed', 'complete
   category: service.category, basePrice: 60, finalAmount: 60, technicianName: 'Rafiq Hasan', technicianEmail: 'technician@example.test',
   customerName: index === 1 ? 'A customer with a long but realistic full name' : 'Tanvir Ahmed', customerEmail: 'customer@example.test',
   customerPhone: '01722366777', address: 'Daffodil International University, Ashulia, Savar, Dhaka',
-  preferredDate: '2026-11-23', problemDescription: 'iPhone 16 Pro Max — intermittent display and touchscreen issue. '.repeat(3),
+  preferredDate: '2026-11-23', problemDescription: 'iPhone 16 Pro Max, intermittent display and touchscreen issue. '.repeat(3),
   status, paymentStatus: [3, 4].includes(index) ? 'paid' : 'unpaid', createdAt: now,
   statusHistory: [{ status: 'requested', changedAt: now }, ...(status === 'completed' ? [{ status: 'completed', changedAt: now }] : [])],
   ...(index === 3 ? { rating: 5, review: 'Excellent service and communication. '.repeat(8), ratedAt: now } : {}),

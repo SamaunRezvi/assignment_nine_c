@@ -36,7 +36,7 @@ export default function AdminTransactionsPage() {
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Total Revenue</p>
-          <p className="text-2xl font-bold">{data ? formatCurrency(data.totalRevenue) : '—'}</p>
+          <p className="text-2xl font-bold">{data ? formatCurrency(data.totalRevenue) : '...'}</p>
         </div>
       </Card>
 
