@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Wrench, ShieldCheck, Inbox, PlusCircle, ListChecks, ClipboardList, UserCog } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
+import { RatingOverviewCard } from '@/components/shared/rating-overview-card';
 import { QuickActions } from '@/components/shared/quick-actions';
 import { RecentJobsList } from '@/components/shared/recent-jobs-list';
 import { StatusBreakdownChart } from '@/components/shared/status-breakdown-chart';
@@ -22,6 +23,8 @@ interface TechnicianStats {
   totalServices: number;
   approvedServices: number;
   pendingRequests: number;
+  averageRating: number | null;
+  reviewCount: number;
 }
 
 export default function TechnicianOverviewPage() {
@@ -39,10 +42,11 @@ export default function TechnicianOverviewPage() {
         <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
         <p className="text-muted-foreground">A summary of your services and incoming jobs.</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard label="Total Services" value={stats?.totalServices ?? '-'} icon={Wrench} />
         <StatsCard label="Approved Services" value={stats?.approvedServices ?? '-'} icon={ShieldCheck} />
         <StatsCard label="Pending Requests" value={stats?.pendingRequests ?? '-'} icon={Inbox} />
+        <RatingOverviewCard averageRating={stats?.averageRating ?? null} reviewCount={stats?.reviewCount ?? 0} />
       </div>
       <QuickActions actions={QUICK_ACTIONS} />
       <div className="grid gap-4 lg:grid-cols-3">
