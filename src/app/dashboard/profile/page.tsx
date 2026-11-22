@@ -1,35 +1,34 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ImageUpload } from '@/components/shared/image-upload';
 import { api } from '@/lib/api-client';
 import { uploadToImgBB } from '@/lib/imgbb';
 import { useAuth } from '@/lib/auth-context';
 import { ROLE_LABEL } from '@/lib/helpers';
+import type { AppUser } from '@/lib/types';
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [area, setArea] = useState('');
-  const [bio, setBio] = useState('');
+
+  if (!user) return null;
+
+  return <ProfileForm key={user.email} user={user} refreshUser={refreshUser} />;
+}
+
+function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => Promise<void> }) {
+  const [name, setName] = useState(user.name ?? '');
+  const [phone, setPhone] = useState(user.phone ?? '');
+  const [area, setArea] = useState(user.area ?? '');
+  const [bio, setBio] = useState(user.bio ?? '');
   const [image, setImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name ?? '');
-      setPhone(user.phone ?? '');
-      setArea(user.area ?? '');
-      setBio(user.bio ?? '');
-    }
-  }, [user]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,15 +45,14 @@ export default function ProfilePage() {
       });
 
       await refreshUser();
+      setImage(null);
       toast.success('Profile updated successfully');
-    } catch {
-      toast.error('Could not update your profile');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not update your profile');
     } finally {
       setSubmitting(false);
     }
   }
-
-  if (!user) return null;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -65,16 +63,16 @@ export default function ProfilePage() {
 
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={user.image} alt={user.name} />
-              <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 space-y-1.5">
-              <Label htmlFor="profile-image">Profile Photo</Label>
-              <Input id="profile-image" type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] ?? null)} />
-            </div>
-          </div>
+          <ImageUpload
+            id="profile-image"
+            label="Profile Photo"
+            value={image}
+            onChange={setImage}
+            currentImage={user.image}
+            alt={user.name}
+            disabled={submitting}
+            avatar
+          />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">

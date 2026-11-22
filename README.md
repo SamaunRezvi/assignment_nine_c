@@ -105,6 +105,18 @@ npm run dev
 | `NEXT_PUBLIC_CLIENT_URL` | This app's own public URL |
 | `NEXT_PUBLIC_IMGBB_API_KEY` | ImgBB API key for image uploads |
 
+### Image uploads and verification
+
+Profile photos (all roles), Add Service, and Edit Service use the same image picker.
+It previews the selected image and accepts JPG, PNG, WebP, and GIF files up to 10 MB.
+Images upload when the form is saved. Editing other fields preserves the existing image.
+Set `NEXT_PUBLIC_IMGBB_API_KEY` in the deployment environment before building;
+changing it on Vercel requires a new deployment.
+
+- `npm run test:images`: validation and upload response regression tests; no network needed.
+- `npm run test:images:host`: uploads a tiny test image using `.env.local` and checks that it loads; requires network access.
+- `npm run test:images:browser`: tests the three forms in Chromium with mocked authentication, API persistence, and ImgBB responses. Start the app on port 3019 (`npm run dev -- -p 3019`) and install Playwright separately or set `PLAYWRIGHT_MODULE` to an existing installation. Use `AUDIT_BASE_URL` to test another local port. These tests do not change production users or services.
+
 ## npm Packages Used
 
 next, react, react-dom, tailwindcss, better-auth, date-fns, lucide-react, sonner, and the shadcn/ui component set (radix primitives, class-variance-authority, clsx, tailwind-merge)

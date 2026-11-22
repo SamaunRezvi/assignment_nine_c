@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { ImageUpload } from '@/components/shared/image-upload';
 import {
   Select,
   SelectContent,
@@ -68,8 +69,8 @@ export default function AddServicePage() {
 
       toast.success('Service submitted and is waiting for admin approval');
       router.push('/dashboard/technician/my-services');
-    } catch {
-      toast.error('Could not add the service. Please try again.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not add the service. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -168,16 +169,15 @@ export default function AddServicePage() {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="image">Service Image</Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              required
-              onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-            />
-          </div>
+          <ImageUpload
+            id="image"
+            label="Service Image"
+            value={image}
+            onChange={setImage}
+            alt="New service image preview"
+            disabled={submitting}
+            required
+          />
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? 'Submitting...' : 'Add Service'}

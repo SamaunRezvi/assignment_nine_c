@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUpload } from '@/components/shared/image-upload';
 import {
   Select,
   SelectContent,
@@ -68,8 +69,8 @@ export function EditServiceDialog({
       toast.success('Service updated and sent for re-approval');
       onOpenChange(false);
       onUpdated();
-    } catch {
-      toast.error('Could not update the service');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not update the service');
     } finally {
       setSubmitting(false);
     }
@@ -77,7 +78,7 @@ export function EditServiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Edit Service</DialogTitle>
         </DialogHeader>
@@ -164,10 +165,15 @@ export function EditServiceDialog({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-image">Replace Image (optional)</Label>
-            <Input id="edit-image" type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] ?? null)} />
-          </div>
+          <ImageUpload
+            id="edit-image"
+            label="Replace Image (optional)"
+            value={image}
+            onChange={setImage}
+            currentImage={service.image}
+            alt={service.title}
+            disabled={submitting}
+          />
 
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">

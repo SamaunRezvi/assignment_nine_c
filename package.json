@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:images": "node --test scripts/test-image-upload.cjs",
+    "test:images:browser": "node scripts/image-upload-browser.cjs",
+    "test:images:host": "node --env-file=.env.local scripts/check-image-host.cjs"
   },
   "dependencies": {
     "better-auth": "^1.7.27",
