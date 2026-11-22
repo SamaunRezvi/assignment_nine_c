@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ServiceCard } from '@/components/shared/service-card';
+import { HeroScrollRing } from '@/components/shared/hero-scroll-ring';
 import type { Service } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -79,9 +80,7 @@ export default async function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="relative mx-auto flex h-72 w-72 items-center justify-center rounded-full bg-primary-foreground/10 sm:h-96 sm:w-96">
-            <Wrench className="h-32 w-32 text-accent sm:h-44 sm:w-44" strokeWidth={1.5} />
-          </div>
+          <HeroScrollRing />
         </div>
       </section>
 
