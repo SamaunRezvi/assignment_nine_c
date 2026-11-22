@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { GoogleSignInButton } from '@/components/shared/google-sign-in-button';
 import { authClient } from '@/lib/auth-client';
 import { setToken } from '@/lib/api-client';
 import { dashboardPathForRole } from '@/lib/helpers';
@@ -129,6 +130,14 @@ export default function SignUpPage() {
             {submitting ? 'Creating account...' : 'Sign Up'}
           </Button>
         </form>
+
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">OR</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        <GoogleSignInButton callbackURL={dashboardPathForRole('customer')} />
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
