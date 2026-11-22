@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 const SLIDES = [
-  { src: 'https://i.ibb.co/7JwBhNLr/1.jpg', alt: 'A technician reviewing repair schematics and tools' },
-  { src: 'https://i.ibb.co/fGqF0vWc/2.jpg', alt: 'A verified electrician at a job site' },
-  { src: 'https://i.ibb.co/Mx4W2Wgq/3.jpg', alt: 'A technician diagnosing electronics in a repair lab' },
-  { src: 'https://i.ibb.co/Psgx4wtM/4.jpg', alt: 'A technician testing hardware components' },
-  { src: 'https://i.ibb.co/Kc1NLWh5/7.jpg', alt: 'A modern kitchen with appliances ready for service' },
-  { src: 'https://i.ibb.co/Qv8Vjz5s/9.jpg', alt: 'A repair tool resting on a workbench' },
+  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools' },
+  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site' },
+  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab' },
+  { src: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=2400&q=90', alt: 'A technician testing hardware components' },
+  { src: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=2400&q=90', alt: 'A modern kitchen with appliances ready for service' },
+  { src: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=2400&q=90', alt: 'A repair tool resting on a workbench' },
 ];
 
 const SLIDE_DURATION = 5000;
@@ -43,20 +43,7 @@ export function HeroSlider() {
           />
         </div>
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/85 to-primary/40" />
-      <div className="absolute inset-x-0 bottom-0 flex justify-center gap-2 pb-4">
-        {SLIDES.map((slide, i) => (
-          <button
-            key={slide.src}
-            type="button"
-            aria-label={`Show slide ${i + 1}`}
-            onClick={() => setActive(i)}
-            className={`h-1.5 rounded-full transition-all ${
-              i === active ? 'w-6 bg-accent' : 'w-1.5 bg-primary-foreground/40'
-            }`}
-          />
-        ))}
-      </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/50 to-primary/10" />
     </div>
   );
 }
