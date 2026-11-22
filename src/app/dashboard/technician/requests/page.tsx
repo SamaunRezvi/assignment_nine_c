@@ -92,7 +92,7 @@ export default function TechnicianRequestsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Manage Requests</h1>
-          <p className="text-muted-foreground">Repair requests, customer ratings and feedback update automatically.</p>
+          <p className="text-muted-foreground">Repair requests and customer ratings update automatically.</p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-44">
@@ -129,7 +129,7 @@ export default function TechnicianRequestsPage() {
                 <TableHead>Preferred Date</TableHead>
                 <TableHead>Problem</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Customer Feedback</TableHead>
+                <TableHead>Customer Rating</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -144,16 +144,15 @@ export default function TechnicianRequestsPage() {
                   <TableCell>
                     <BookingStatusBadge status={booking.status} />
                   </TableCell>
-                  <TableCell className="min-w-64 max-w-80 whitespace-normal">
+                  <TableCell className="min-w-40 whitespace-normal">
                     {booking.rating ? (
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         <div role="img" aria-label={`Customer rating ${booking.rating} out of 5 stars`}>
                           <RatingStars rating={booking.rating} />
                         </div>
-                        <p className="whitespace-pre-wrap break-words text-sm">{booking.review || 'No written feedback provided.'}</p>
-                        {booking.ratedAt && <p className="text-xs text-muted-foreground">Reviewed {formatDate(booking.ratedAt)}</p>}
+                        {booking.ratedAt && <p className="text-xs text-muted-foreground">Rated {formatDate(booking.ratedAt)}</p>}
                       </div>
-                    ) : <span className="text-sm text-muted-foreground">{booking.status === 'completed' && booking.paymentStatus === 'paid' ? 'Awaiting customer feedback' : 'Available after completion and payment'}</span>}
+                    ) : <span className="text-sm text-muted-foreground">{booking.status === 'completed' && booking.paymentStatus === 'paid' ? 'Awaiting customer rating' : 'Available after completion and payment'}</span>}
                   </TableCell>
                   <TableCell className="text-right">{renderActions(booking)}</TableCell>
                 </TableRow>
