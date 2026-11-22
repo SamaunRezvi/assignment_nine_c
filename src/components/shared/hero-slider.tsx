@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 const SLIDES = [
-  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: 'center' },
-  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: 'top' },
-  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: 'top' },
-  { src: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=2400&q=90', alt: 'A technician testing hardware components', position: 'top' },
+  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: 'center 30%' },
+  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: 'center 15%' },
+  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: 'center 25%' },
+  { src: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=2400&q=90', alt: 'A technician testing hardware components', position: 'center 20%' },
   { src: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=2400&q=90', alt: 'A modern kitchen with appliances ready for service', position: 'center' },
   { src: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=2400&q=90', alt: 'A repair tool resting on a workbench', position: 'center' },
 ];
@@ -44,7 +44,8 @@ export function HeroSlider() {
           />
         </div>
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/50 to-primary/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/70 to-primary/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
     </div>
   );
 }
