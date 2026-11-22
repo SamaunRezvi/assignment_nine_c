@@ -1,4 +1,4 @@
-[![FixMate animated illustration of a phone repair and a verified technician](/SamaunRezvi/assignment_nine_c/raw/main/public/readme-hero.svg)](/SamaunRezvi/assignment_nine_c/blob/main/public/readme-hero.svg)
+![FixMate animated illustration of a phone repair and a verified technician](https://raw.githubusercontent.com/SamaunRezvi/assignment_nine_c/main/public/readme-hero.svg)
 
 <div align="center">
 
