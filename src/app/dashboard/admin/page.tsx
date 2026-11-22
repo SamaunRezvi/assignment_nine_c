@@ -1,9 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, Wrench, Hourglass } from 'lucide-react';
+import { Users, Wrench, Hourglass, ShieldCheck, ClipboardList, Receipt } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
+import { QuickActions } from '@/components/shared/quick-actions';
 import { api } from '@/lib/api-client';
+
+const QUICK_ACTIONS = [
+  { label: 'Manage Users', description: 'Review accounts and change user roles.', href: '/dashboard/admin/users', icon: Users },
+  { label: 'Service Approval', description: 'Approve or reject technician service listings.', href: '/dashboard/admin/services', icon: ShieldCheck },
+  { label: 'All Bookings', description: 'Monitor every repair job on the platform.', href: '/dashboard/admin/bookings', icon: ClipboardList },
+  { label: 'Transactions', description: 'See every payment and total revenue.', href: '/dashboard/admin/transactions', icon: Receipt },
+];
 
 interface AdminStats {
   totalUsers: number;
@@ -29,6 +37,7 @@ export default function AdminOverviewPage() {
         <StatsCard label="Total Technicians" value={stats?.totalTechnicians ?? '-'} icon={Wrench} />
         <StatsCard label="Pending Services" value={stats?.pendingServices ?? '-'} icon={Hourglass} />
       </div>
+      <QuickActions actions={QUICK_ACTIONS} />
     </div>
   );
 }
