@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import { ClipboardList, Hourglass, CheckCircle2, Search, Receipt, UserCog } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
 import { QuickActions } from '@/components/shared/quick-actions';
+import { RecentJobsList } from '@/components/shared/recent-jobs-list';
+import { StatusBreakdownChart } from '@/components/shared/status-breakdown-chart';
+import { NotificationPreview } from '@/components/shared/notification-preview';
+import { Card } from '@/components/ui/card';
 import { api } from '@/lib/api-client';
+import type { Booking } from '@/lib/types';
 
 const QUICK_ACTIONS = [
   { label: 'Browse Services', description: 'Find a verified technician for your next repair.', href: '/services', icon: Search },
@@ -21,9 +26,11 @@ interface CustomerStats {
 
 export default function CustomerOverviewPage() {
   const [stats, setStats] = useState<CustomerStats | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     api.get<CustomerStats>('/api/users/stats').then(setStats).catch(() => setStats(null));
+    api.get<Booking[]>('/api/bookings/my').then(setBookings).catch(() => setBookings([]));
   }, []);
 
   return (
@@ -38,6 +45,19 @@ export default function CustomerOverviewPage() {
         <StatsCard label="Completed Jobs" value={stats?.completedJobs ?? '-'} icon={CheckCircle2} />
       </div>
       <QuickActions actions={QUICK_ACTIONS} />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-muted-foreground">Recent Bookings</h2>
+          <RecentJobsList bookings={bookings} nameField="technicianName" emptyMessage="You have not booked a repair yet." />
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Booking Status Breakdown</h2>
+          <Card className="p-4">
+            <StatusBreakdownChart bookings={bookings} />
+          </Card>
+        </div>
+      </div>
+      <NotificationPreview />
     </div>
   );
 }

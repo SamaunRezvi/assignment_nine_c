@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import { Users, Wrench, Hourglass, ShieldCheck, ClipboardList, Receipt } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
 import { QuickActions } from '@/components/shared/quick-actions';
+import { RecentJobsList } from '@/components/shared/recent-jobs-list';
+import { StatusBreakdownChart } from '@/components/shared/status-breakdown-chart';
+import { NotificationPreview } from '@/components/shared/notification-preview';
+import { Card } from '@/components/ui/card';
 import { api } from '@/lib/api-client';
+import type { Booking } from '@/lib/types';
 
 const QUICK_ACTIONS = [
   { label: 'Manage Users', description: 'Review accounts and change user roles.', href: '/dashboard/admin/users', icon: Users },
@@ -21,9 +26,11 @@ interface AdminStats {
 
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     api.get<AdminStats>('/api/admin/stats').then(setStats).catch(() => setStats(null));
+    api.get<Booking[]>('/api/admin/bookings').then(setBookings).catch(() => setBookings([]));
   }, []);
 
   return (
@@ -38,6 +45,19 @@ export default function AdminOverviewPage() {
         <StatsCard label="Pending Services" value={stats?.pendingServices ?? '-'} icon={Hourglass} />
       </div>
       <QuickActions actions={QUICK_ACTIONS} />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-muted-foreground">Recent Bookings</h2>
+          <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage="No bookings on the platform yet." />
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Platform Status Breakdown</h2>
+          <Card className="p-4">
+            <StatusBreakdownChart bookings={bookings} />
+          </Card>
+        </div>
+      </div>
+      <NotificationPreview />
     </div>
   );
 }

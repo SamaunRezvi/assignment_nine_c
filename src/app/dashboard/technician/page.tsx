@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import { Wrench, ShieldCheck, Inbox, PlusCircle, ListChecks, ClipboardList, UserCog } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
 import { QuickActions } from '@/components/shared/quick-actions';
+import { RecentJobsList } from '@/components/shared/recent-jobs-list';
+import { StatusBreakdownChart } from '@/components/shared/status-breakdown-chart';
+import { NotificationPreview } from '@/components/shared/notification-preview';
+import { Card } from '@/components/ui/card';
 import { api } from '@/lib/api-client';
+import type { Booking } from '@/lib/types';
 
 const QUICK_ACTIONS = [
   { label: 'Add a Service', description: 'List a new repair service for customers to book.', href: '/dashboard/technician/add-service', icon: PlusCircle },
@@ -21,9 +26,11 @@ interface TechnicianStats {
 
 export default function TechnicianOverviewPage() {
   const [stats, setStats] = useState<TechnicianStats | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     api.get<TechnicianStats>('/api/users/stats').then(setStats).catch(() => setStats(null));
+    api.get<Booking[]>('/api/bookings/technician').then(setBookings).catch(() => setBookings([]));
   }, []);
 
   return (
@@ -38,6 +45,19 @@ export default function TechnicianOverviewPage() {
         <StatsCard label="Pending Requests" value={stats?.pendingRequests ?? '-'} icon={Inbox} />
       </div>
       <QuickActions actions={QUICK_ACTIONS} />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-muted-foreground">Recent Jobs</h2>
+          <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage="No repair requests yet." />
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">Job Status Breakdown</h2>
+          <Card className="p-4">
+            <StatusBreakdownChart bookings={bookings} />
+          </Card>
+        </div>
+      </div>
+      <NotificationPreview />
     </div>
   );
 }
