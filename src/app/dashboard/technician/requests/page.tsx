@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
 import { CompleteJobDialog } from '@/components/shared/complete-job-dialog';
+import { BookingDetailDialog } from '@/components/shared/booking-detail-dialog';
 import { RatingStars } from '@/components/shared/rating-stars';
 import { useLiveResource } from '@/lib/use-live-resource';
 import { api } from '@/lib/api-client';
@@ -38,6 +39,7 @@ const STATUS_FILTERS: { value: string; label: string }[] = [
 export default function TechnicianRequestsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [completeTarget, setCompleteTarget] = useState<Booking | null>(null);
+  const [detailTarget, setDetailTarget] = useState<Booking | null>(null);
 
   const query = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
   const { data, loading, error, refresh: loadBookings } = useLiveResource<Booking[]>(`/api/bookings/technician${query}`);
@@ -130,6 +132,7 @@ export default function TechnicianRequestsPage() {
                 <TableHead>Problem</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Customer Rating</TableHead>
+                <TableHead className="text-right">Details</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -154,6 +157,11 @@ export default function TechnicianRequestsPage() {
                       </div>
                     ) : <span className="text-sm text-muted-foreground">{booking.status === 'completed' && booking.paymentStatus === 'paid' ? 'Awaiting customer rating' : 'Available after completion and payment'}</span>}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" onClick={() => setDetailTarget(booking)}>
+                      View
+                    </Button>
+                  </TableCell>
                   <TableCell className="text-right">{renderActions(booking)}</TableCell>
                 </TableRow>
               ))}
@@ -170,6 +178,8 @@ export default function TechnicianRequestsPage() {
           onCompleted={loadBookings}
         />
       )}
+
+      <BookingDetailDialog booking={detailTarget} viewerRole="technician" onOpenChange={(open) => !open && setDetailTarget(null)} />
     </div>
   );
 }
