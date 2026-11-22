@@ -41,6 +41,7 @@ const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
   { href: '/about', label: 'About' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 export function Footer() {

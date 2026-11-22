@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CheckCircle2, ShieldCheck, Handshake, Wallet } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
@@ -62,6 +63,13 @@ export default function AboutPage() {
           ))}
         </ol>
       </div>
+
+      <p className="mt-10 text-center text-sm text-muted-foreground">
+        Have more questions?{' '}
+        <Link href="/faq" className="font-medium text-primary hover:underline">
+          Visit our FAQ page
+        </Link>
+      </p>
     </div>
   );
 }
