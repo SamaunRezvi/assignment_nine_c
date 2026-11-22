@@ -1,0 +1,47 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#134e4a"/>
+    </linearGradient>
+    <linearGradient id="phone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="300" fill="url(#bg)"/>
+
+  <g transform="translate(220,150)">
+    <rect x="-55" y="-95" width="110" height="190" rx="16" fill="url(#phone)" stroke="#14b8a6" stroke-width="3"/>
+    <rect x="-40" y="-75" width="80" height="130" rx="4" fill="#042f2e"/>
+    <circle cx="0" cy="68" r="8" fill="#14b8a6"/>
+    <path d="M-15,-20 L15,-20 L15,10 L30,10 L0,45 L-30,10 L-15,10 Z" fill="#f59e0b" opacity="0">
+      <animate attributeName="opacity" values="0;0;1;1;0;0" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <g opacity="0">
+      <animate attributeName="opacity" values="1;1;0;0;1" dur="5s" repeatCount="indefinite"/>
+      <path d="M0,-70 L10,-60 L10,-45 L25,-30 L40,-30 L45,-20 L40,-10 L25,-10 L10,5 L10,20 L0,30 L-10,20 L-10,5 L-25,-10 L-40,-10 L-45,-20 L-40,-30 L-25,-30 L-10,-45 L-10,-60 Z"
+            fill="#f87171" transform="scale(0.55) translate(0,-40)"/>
+    </g>
+  </g>
+
+  <g transform="translate(600,150)" font-family="Verdana, Arial, sans-serif">
+    <circle r="55" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 10">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <text y="-70" fill="#f59e0b" font-size="40" font-weight="bold" text-anchor="middle">FixMate</text>
+    <text y="-40" fill="#99f6e4" font-size="16" text-anchor="middle">Book a technician. Pay after the job is done.</text>
+  </g>
+
+  <g transform="translate(960,150)">
+    <rect x="-60" y="-70" width="120" height="140" rx="14" fill="#042f2e" stroke="#14b8a6" stroke-width="3"/>
+    <circle cx="0" cy="-30" r="22" fill="#2dd4bf"/>
+    <path d="M-28,50 C-28,10 28,10 28,50 Z" fill="#0d9488"/>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;1;0;0" dur="5s" begin="1.2s" repeatCount="indefinite"/>
+      <circle cx="30" cy="-55" r="16" fill="#facc15"/>
+      <path d="M24,-55 l4,5 l9,-11" stroke="#042f2e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>
