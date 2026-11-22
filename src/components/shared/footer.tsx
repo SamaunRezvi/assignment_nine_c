@@ -124,7 +124,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-sidebar-border px-4 py-5 text-center text-xs text-sidebar-foreground/60 sm:px-6 lg:px-8">
-        &copy; {new Date().getFullYear()} FixMate. All rights reserved.
+        &copy; 2026 FixMate. All rights reserved.
       </div>
     </footer>
   );
