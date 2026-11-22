@@ -61,9 +61,9 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative isolate overflow-hidden bg-primary text-primary-foreground">
+      <section className="relative isolate min-h-[32rem] overflow-hidden bg-primary text-primary-foreground sm:min-h-[36rem]">
         <HeroSlider />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[32rem] max-w-7xl items-center px-4 py-16 sm:min-h-[36rem] sm:px-6 lg:px-8">
           <div className="max-w-xl space-y-6">
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
               Broken Device? Get It Fixed by Verified Technicians
