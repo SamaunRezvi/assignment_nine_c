@@ -3,13 +3,21 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-const SLIDES = [
-  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: 'center 5%', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: 'center 0%', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: 'center 25%', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=2400&q=90', alt: 'A technician testing hardware components', position: 'center 20%', fit: 'cover' },
+interface Slide {
+  src: string;
+  alt: string;
+  position: string;
+  fit: 'cover' | 'contain';
+  flip?: boolean;
+}
+
+// Positions are tuned so each subject stays right of the headline and fully in frame.
+const SLIDES: Slide[] = [
+  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: '0% 6%', fit: 'cover', flip: true },
+  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: '50% 61%', fit: 'cover' },
+  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: '50% 70%', fit: 'cover' },
   { src: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=2400&q=90', alt: 'A modern kitchen with appliances ready for service', position: 'center', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=2400&q=90', alt: 'A repair tool resting on a workbench', position: 'center', fit: 'contain' },
+  { src: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=2400&q=90', alt: 'A repair tool resting on a workbench', position: '100% 50%', fit: 'contain' },
 ];
 
 const SLIDE_DURATION = 5000;
@@ -33,18 +41,30 @@ export function HeroSlider() {
           style={{ opacity: i === active ? 1 : 0 }}
           aria-hidden={i !== active}
         >
+          {slide.fit === 'contain' && (
+            <Image
+              src={slide.src}
+              alt=""
+              fill
+              sizes="100vw"
+              className="scale-110 object-cover blur-2xl brightness-75"
+            />
+          )}
           <Image
             src={slide.src}
             alt={slide.alt}
             fill
             sizes="100vw"
-            className={slide.fit === 'contain' ? 'object-contain bg-black' : 'object-cover'}
-            style={{ objectPosition: slide.position }}
+            className={slide.fit === 'contain' ? 'object-contain' : 'object-cover'}
+            style={{
+              objectPosition: slide.position,
+              transform: slide.flip ? 'scaleX(-1)' : undefined,
+            }}
             priority={i === 0}
           />
         </div>
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/70 to-primary/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/55 via-40% to-transparent to-75%" />
       <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
     </div>
   );
