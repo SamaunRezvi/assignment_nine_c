@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import Link from 'next/link';
 import { CalendarX, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import {
   Table,
@@ -37,7 +38,6 @@ export default function CustomerBookingsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function loadBookings() {
-    setLoading(true);
     try {
       const data = await api.get<Booking[]>('/api/bookings/my');
       setBookings(data);
@@ -68,7 +68,7 @@ export default function CustomerBookingsPage() {
       const { url } = await api.post<{ url: string }>('/api/payments/create-checkout-session', {
         bookingId: booking._id,
       });
-      window.location.href = url;
+      window.location.assign(url);
     } catch {
       toast.error('Could not start the payment');
       setPayingId(null);
@@ -83,7 +83,7 @@ export default function CustomerBookingsPage() {
         <CalendarX className="h-10 w-10 text-muted-foreground" />
         <p className="font-medium">You have not requested any repairs yet</p>
         <Button asChild>
-          <a href="/services">Browse Services</a>
+          <Link href="/services">Browse Services</Link>
         </Button>
       </div>
     );
@@ -115,8 +115,8 @@ export default function CustomerBookingsPage() {
               const canRate = booking.status === 'completed' && booking.paymentStatus === 'paid';
 
               return (
-                <>
-                  <TableRow key={booking._id}>
+                <Fragment key={booking._id}>
+                  <TableRow>
                     <TableCell className="flex items-center gap-3">
                       <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
                         <Image src={booking.serviceImage} alt={booking.serviceTitle} fill className="object-cover" />
@@ -158,6 +158,7 @@ export default function CustomerBookingsPage() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          aria-label={expanded ? 'Hide booking details' : 'Show booking details'}
                           onClick={() => setExpandedId(expanded ? null : booking._id)}
                         >
                           {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -179,7 +180,7 @@ export default function CustomerBookingsPage() {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </TableBody>

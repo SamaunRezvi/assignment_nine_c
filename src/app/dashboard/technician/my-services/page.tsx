@@ -36,7 +36,6 @@ export default function MyServicesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Service | null>(null);
 
   async function loadServices() {
-    setLoading(true);
     try {
       const data = await api.get<Service[]>('/api/services/mine/list');
       setServices(data);
@@ -87,7 +86,7 @@ export default function MyServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">My Services</h1>
           <p className="text-muted-foreground">Manage the services you offer on FixMate.</p>

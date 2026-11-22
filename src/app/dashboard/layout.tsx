@@ -43,15 +43,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden w-64 shrink-0 lg:block">
-        <div className="fixed h-screen w-64">
-          <DashboardSidebar role={user.role} />
-        </div>
+    <div className="min-h-dvh lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <aside className="sticky top-0 hidden h-dvh min-w-0 self-start overflow-y-auto lg:block">
+        <DashboardSidebar role={user.role} />
       </aside>
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      <div className="flex min-h-dvh min-w-0 flex-col">
         <DashboardTopbar user={user} />
-        <main className="flex-1 bg-muted/30 p-4 sm:p-6">{children}</main>
+        <main className="min-w-0 flex-1 bg-muted/30 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

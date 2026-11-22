@@ -19,13 +19,13 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
 
   return (
     <div className="mt-10 flex items-center justify-center gap-2">
-      <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => goTo(page - 1)}>
+      <Button variant="outline" size="icon" aria-label="Previous page" disabled={page <= 1} onClick={() => goTo(page - 1)}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
       <span className="text-sm text-muted-foreground">
         Page {page} of {totalPages}
       </span>
-      <Button variant="outline" size="icon" disabled={page >= totalPages} onClick={() => goTo(page + 1)}>
+      <Button variant="outline" size="icon" aria-label="Next page" disabled={page >= totalPages} onClick={() => goTo(page + 1)}>
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>

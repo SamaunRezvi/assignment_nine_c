@@ -145,6 +145,30 @@ URL and JWT configuration; no additional environment variables are needed.
 - `npm run test:reviews:browser`: customer-to-technician review updates, legacy
   feedback, alert toggle independence, filters, and transaction refresh/recovery.
 
+## Responsive verification
+
+The dashboard uses a reserved desktop sidebar column and a mobile drawer that
+closes after navigation or when returning to desktop size. Tables scroll within
+their own container, with a hint and keyboard focus when wider than the screen.
+Dialogs and notification panels stay within the viewport and scroll internally.
+Image fields use a preview and Choose/Change photo buttons; local filenames are
+not displayed. Unsaved selections can be discarded.
+
+The browser audit discovers every `page.tsx` route, covers all three profile roles,
+dynamic detail pages, empty/not-found/payment states, and checks 320, 390, 768,
+1024, 1366, and 1920px widths. A separate interaction audit covers drawers,
+menus, upload controls, dialogs, loading/error states, and landscape screens.
+See [the coverage report](docs/responsive-review.md).
+
+For an isolated local audit, start `npm run test:responsive:fixtures` on port 5038.
+Build and start the app on port 3019 with `NEXT_PUBLIC_SERVER_URL=http://localhost:5038`
+and `NEXT_PUBLIC_CLIENT_URL=http://localhost:3019` set in those processes. With
+Playwright available (or `PLAYWRIGHT_MODULE` pointing to an existing install), run
+`npm run test:responsive:pages` and `npm run test:responsive:interactions`.
+`AUDIT_WIDTHS` accepts comma-separated widths for a focused run. Screenshots and
+JSON results are saved under `.responsive-review/` and excluded from Git. Rebuild
+with your normal environment after stopping the fixture audit.
+
 ## npm Packages Used
 
 next, react, react-dom, tailwindcss, better-auth, date-fns, lucide-react, sonner, and the shadcn/ui component set (radix primitives, class-variance-authority, clsx, tailwind-merge)

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Home, LayoutDashboard, LogOut, Menu, UserPen } from 'lucide-react';
 import { toast } from 'sonner';
@@ -25,6 +25,14 @@ import type { AppUser } from '@/lib/types';
 
 export function DashboardTopbar({ user }: { user: AppUser }) {
   const [signingOut, setSigningOut] = useState(false);
+  const [navigationOpen, setNavigationOpen] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) setNavigationOpen(false); };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
 
   async function handleSignOut() {
     if (signingOut) return;
@@ -46,15 +54,15 @@ export function DashboardTopbar({ user }: { user: AppUser }) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
-      <Sheet>
+      <Sheet open={navigationOpen} onOpenChange={setNavigationOpen}>
         <SheetTrigger asChild className="lg:hidden">
           <Button variant="ghost" size="icon" aria-label="Open dashboard navigation">
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-72 p-0">
+        <SheetContent side="left" className="w-72 p-0 [&>[data-slot=sheet-close]]:text-sidebar-foreground">
           <SheetTitle className="sr-only">Dashboard navigation</SheetTitle>
-          <DashboardSidebar role={user.role} />
+          <DashboardSidebar role={user.role} onNavigate={() => setNavigationOpen(false)} />
         </SheetContent>
       </Sheet>
 

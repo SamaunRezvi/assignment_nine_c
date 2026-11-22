@@ -4,16 +4,33 @@ import * as React from "react"
 import { cn } from "cn"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
+  const container = React.useRef<HTMLDivElement>(null)
+  const [scrollable, setScrollable] = React.useState(false)
+  React.useEffect(() => {
+    const element = container.current
+    if (!element) return
+    const observer = new ResizeObserver(() => setScrollable(element.scrollWidth > element.clientWidth + 1))
+    observer.observe(element)
+    if (element.firstElementChild) observer.observe(element.firstElementChild)
+    return () => observer.disconnect()
+  }, [])
   return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
+    <div className="min-w-0">
+      <div
+        ref={container}
+        data-slot="table-container"
+        role="region"
+        aria-label="Data table"
+        tabIndex={scrollable ? 0 : undefined}
+        className="relative w-full overflow-x-auto outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      >
+        <table
+          data-slot="table"
+          className={cn("w-full caption-bottom text-sm", className)}
+          {...props}
+        />
+      </div>
+      {scrollable && <p className="px-3 py-2 text-xs text-muted-foreground">Scroll sideways to see all columns.</p>}
     </div>
   )
 }

@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
+import { Camera, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getImageValidationError, IMAGE_ACCEPT } from '@/lib/image-validation';
@@ -22,6 +23,7 @@ export function ImageUpload({
   avatar?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [selection, setSelection] = useState<{ file: File; url: string }>();
   const preview = value && selection?.file === value ? selection.url : currentImage;
 
@@ -49,14 +51,21 @@ export function ImageUpload({
       ) : null}
       <div className="min-w-0 flex-1 space-y-1.5">
         <Label htmlFor={id}>{label}</Label>
-        <Input
+        <input
           ref={inputRef}
+          className="sr-only"
+          tabIndex={-1}
           id={id}
           type="file"
           accept={IMAGE_ACCEPT}
           disabled={disabled}
           required={required}
           aria-describedby={`${id}-help`}
+          onInvalid={(event) => {
+            event.preventDefault();
+            buttonRef.current?.focus();
+            toast.error('Please choose a photo before saving.');
+          }}
           onChange={(event) => {
             const file = event.target.files?.[0] ?? null;
             const error = file ? getImageValidationError(file) : null;
@@ -71,6 +80,17 @@ export function ImageUpload({
             onChange(file);
           }}
         />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button ref={buttonRef} type="button" variant="outline" disabled={disabled} onClick={() => inputRef.current?.click()} aria-controls={id}>
+            <Camera className="h-4 w-4" />
+            {preview ? 'Change photo' : 'Choose photo'}
+          </Button>
+          {value && <Button type="button" variant="ghost" size="icon" aria-label="Discard selected photo" disabled={disabled} onClick={() => {
+            setSelection(undefined);
+            onChange(null);
+          }}><X className="h-4 w-4" /></Button>}
+        </div>
+        {value && <p role="status" className="text-xs font-medium text-primary">New photo ready to save</p>}
         <p id={`${id}-help`} className="text-xs text-muted-foreground">
           JPG, PNG, WebP, or GIF, up to 10 MB. Preview your photo here, then save to upload it.
         </p>

@@ -19,8 +19,6 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     if (!sessionId) {
-      setError(true);
-      setLoading(false);
       return;
     }
 
@@ -34,7 +32,7 @@ export default function PaymentSuccessPage() {
   return (
     <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-4">
       <Card className="w-full space-y-4 p-8 text-center">
-        {loading ? (
+        {loading && sessionId ? (
           <p className="text-muted-foreground">Verifying your payment...</p>
         ) : error || !payment ? (
           <>
@@ -49,7 +47,7 @@ export default function PaymentSuccessPage() {
             <p className="text-muted-foreground">
               You paid {formatCurrency(payment.amount)} for {payment.serviceTitle}.
             </p>
-            <p className="font-mono text-xs text-muted-foreground">
+            <p className="break-all font-mono text-xs text-muted-foreground">
               Transaction ID: {payment.transactionId}
             </p>
           </>

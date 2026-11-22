@@ -12,7 +12,10 @@
     "test:images:host": "node --env-file=.env.local scripts/check-image-host.cjs",
     "test:auth-notifications": "node --test scripts/test-auth-notifications.cjs",
     "test:auth-notifications:browser": "node scripts/auth-notifications-browser.cjs",
-    "test:reviews:browser": "node scripts/reviews-transactions-browser.cjs"
+    "test:reviews:browser": "node scripts/reviews-transactions-browser.cjs",
+    "test:responsive:fixtures": "node scripts/responsive-fixtures.cjs",
+    "test:responsive:pages": "node scripts/responsive-browser.cjs",
+    "test:responsive:interactions": "node scripts/responsive-interactions.cjs"
   },
   "dependencies": {
     "better-auth": "^1.7.27",

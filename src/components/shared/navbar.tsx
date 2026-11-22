@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, LayoutDashboard, UserPen, LogOut } from 'lucide-react';
 import { Logo } from './logo';
@@ -33,8 +34,17 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading } = useAuth();
+  const [navigationOpen, setNavigationOpen] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const closeOnDesktop = () => { if (desktop.matches) setNavigationOpen(false); };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
 
   async function handleSignOut() {
+    setNavigationOpen(false);
     await authClient.signOut();
     clearToken();
     toast.success('Signed out successfully');
@@ -108,13 +118,15 @@ export function Navbar() {
             )}
           </div>
 
-          <Sheet>
+          <Sheet open={navigationOpen} onOpenChange={setNavigationOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Open navigation menu">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-72" onClick={event => {
+              if ((event.target as HTMLElement).closest('a')) setNavigationOpen(false);
+            }}>
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
               <div className="mt-8 flex flex-col gap-6 px-4">
                 <nav className="flex flex-col gap-4">

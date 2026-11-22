@@ -58,7 +58,7 @@ export function ServiceFilters() {
       </form>
 
       <Select value={searchParams.get('category') ?? 'all'} onValueChange={(v) => updateParam('category', v)}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full min-w-0">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
         <SelectContent>
@@ -72,7 +72,7 @@ export function ServiceFilters() {
       </Select>
 
       <Select value={searchParams.get('serviceMode') ?? 'all'} onValueChange={(v) => updateParam('serviceMode', v)}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full min-w-0">
           <SelectValue placeholder="Service Mode" />
         </SelectTrigger>
         <SelectContent>
@@ -86,7 +86,7 @@ export function ServiceFilters() {
       </Select>
 
       <Select value={searchParams.get('area') ?? 'all'} onValueChange={(v) => updateParam('area', v)}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full min-w-0">
           <SelectValue placeholder="Area" />
         </SelectTrigger>
         <SelectContent>
@@ -100,7 +100,7 @@ export function ServiceFilters() {
       </Select>
 
       <Select value={searchParams.get('sort') ?? 'newest'} onValueChange={(v) => updateParam('sort', v)}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full min-w-0">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
