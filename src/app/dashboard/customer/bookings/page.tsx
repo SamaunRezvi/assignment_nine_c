@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import { CalendarX } from 'lucide-react';
+import { CalendarX, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -22,6 +22,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
+import { BookingTimeline } from '@/components/shared/booking-timeline';
+import { RateJobDialog } from '@/components/shared/rate-job-dialog';
 import { api } from '@/lib/api-client';
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import type { Booking } from '@/lib/types';
@@ -30,7 +32,9 @@ export default function CustomerBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
+  const [rateTarget, setRateTarget] = useState<Booking | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function loadBookings() {
     setLoading(true);
@@ -106,37 +110,78 @@ export default function CustomerBookingsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {bookings.map((booking) => (
-              <TableRow key={booking._id}>
-                <TableCell className="flex items-center gap-3">
-                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
-                    <Image src={booking.serviceImage} alt={booking.serviceTitle} fill className="object-cover" />
-                  </div>
-                  <span className="font-medium">{booking.serviceTitle}</span>
-                </TableCell>
-                <TableCell>{booking.technicianName}</TableCell>
-                <TableCell>{formatDate(booking.preferredDate)}</TableCell>
-                <TableCell>{formatCurrency(booking.finalAmount)}</TableCell>
-                <TableCell>
-                  <BookingStatusBadge status={booking.status} />
-                </TableCell>
-                <TableCell>
-                  <PaymentStatusBadge status={booking.paymentStatus} />
-                </TableCell>
-                <TableCell className="text-right">
-                  {booking.status === 'requested' && (
-                    <Button variant="outline" size="sm" onClick={() => setCancelTarget(booking)}>
-                      Cancel
-                    </Button>
+            {bookings.map((booking) => {
+              const expanded = expandedId === booking._id;
+              const canRate = booking.status === 'completed' && booking.paymentStatus === 'paid';
+
+              return (
+                <>
+                  <TableRow key={booking._id}>
+                    <TableCell className="flex items-center gap-3">
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
+                        <Image src={booking.serviceImage} alt={booking.serviceTitle} fill className="object-cover" />
+                      </div>
+                      <span className="font-medium">{booking.serviceTitle}</span>
+                    </TableCell>
+                    <TableCell>{booking.technicianName}</TableCell>
+                    <TableCell>{formatDate(booking.preferredDate)}</TableCell>
+                    <TableCell>{formatCurrency(booking.finalAmount)}</TableCell>
+                    <TableCell>
+                      <BookingStatusBadge status={booking.status} />
+                    </TableCell>
+                    <TableCell>
+                      <PaymentStatusBadge status={booking.paymentStatus} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {booking.status === 'requested' && (
+                          <Button variant="outline" size="sm" onClick={() => setCancelTarget(booking)}>
+                            Cancel
+                          </Button>
+                        )}
+                        {booking.status === 'completed' && booking.paymentStatus === 'unpaid' && (
+                          <Button size="sm" disabled={payingId === booking._id} onClick={() => handlePayNow(booking)}>
+                            {payingId === booking._id ? 'Redirecting...' : 'Pay Now'}
+                          </Button>
+                        )}
+                        {canRate && !booking.rating && (
+                          <Button variant="outline" size="sm" onClick={() => setRateTarget(booking)}>
+                            Rate this job
+                          </Button>
+                        )}
+                        {canRate && booking.rating && (
+                          <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                            {booking.rating}
+                          </span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setExpandedId(expanded ? null : booking._id)}
+                        >
+                          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  {expanded && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="bg-muted/30">
+                        {booking.statusHistory && booking.statusHistory.length > 0 ? (
+                          <BookingTimeline statusHistory={booking.statusHistory} />
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No timeline available for this booking.</p>
+                        )}
+                        {booking.review && (
+                          <p className="mt-3 text-sm italic text-muted-foreground">&quot;{booking.review}&quot;</p>
+                        )}
+                      </TableCell>
+                    </TableRow>
                   )}
-                  {booking.status === 'completed' && booking.paymentStatus === 'unpaid' && (
-                    <Button size="sm" disabled={payingId === booking._id} onClick={() => handlePayNow(booking)}>
-                      {payingId === booking._id ? 'Redirecting...' : 'Pay Now'}
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                </>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
@@ -159,6 +204,15 @@ export default function CustomerBookingsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {rateTarget && (
+        <RateJobDialog
+          booking={rateTarget}
+          open={!!rateTarget}
+          onOpenChange={(open) => !open && setRateTarget(null)}
+          onRated={loadBookings}
+        />
+      )}
     </div>
   );
 }
