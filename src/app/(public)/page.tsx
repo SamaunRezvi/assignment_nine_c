@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ServiceCard } from '@/components/shared/service-card';
-import { HeroScrollRing } from '@/components/shared/hero-scroll-ring';
+import { HeroSlider } from '@/components/shared/hero-slider';
 import type { Service } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -61,13 +61,14 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div className="space-y-6">
+      <section className="relative isolate overflow-hidden bg-primary text-primary-foreground">
+        <HeroSlider />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="max-w-xl space-y-6">
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
               Broken Device? Get It Fixed by Verified Technicians
             </h1>
-            <p className="max-w-xl text-lg text-primary-foreground/80">
+            <p className="text-lg text-primary-foreground/80">
               Book trusted technicians for phones, laptops, ACs, fridges, TVs and more. Track every
               step of the job and pay only after the work is complete.
             </p>
@@ -80,7 +81,6 @@ export default async function HomePage() {
               </Button>
             </div>
           </div>
-          <HeroScrollRing />
         </div>
       </section>
 
