@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DashboardSidebar } from './dashboard-sidebar';
+import { NotificationBell } from './notification-bell';
 import { dashboardPathForRole, ROLE_LABEL } from '@/lib/helpers';
 import { authClient } from '@/lib/auth-client';
 import { clearToken } from '@/lib/api-client';
@@ -61,61 +62,64 @@ export function DashboardTopbar({ user }: { user: AppUser }) {
         {ROLE_LABEL[user.role]} Dashboard
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            aria-label="Open account menu"
-            className="flex min-h-11 items-center gap-3 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <div className="hidden text-right sm:block">
-              <p className="max-w-48 truncate text-sm font-medium">{user.name}</p>
-              <Badge variant="secondary" className="text-xs">
-                {ROLE_LABEL[user.role]}
-              </Badge>
-            </div>
-            <Avatar>
-              <AvatarImage src={user.image} alt={user.name} />
-              <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-60 max-w-[calc(100vw-2rem)]" sideOffset={8}>
-          <DropdownMenuLabel className="flex flex-col gap-1 px-2 py-2">
-            <span className="truncate font-semibold text-foreground">{user.name}</span>
-            <Badge variant="secondary" className="w-fit text-xs">{ROLE_LABEL[user.role]}</Badge>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
-            <Link href={dashboardPathForRole(user.role)}>
-              <LayoutDashboard /> Dashboard
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
-            <Link href="/dashboard/profile">
-              <UserPen /> Update Profile
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
-            <Link href="/">
-              <Home /> Back to Home
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            disabled={signingOut}
-            className="min-h-10 cursor-pointer"
-            onSelect={(event) => {
-              event.preventDefault();
-              void handleSignOut();
-            }}
-          >
-            <LogOut /> {signingOut ? 'Signing out...' : 'Sign Out'}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-2">
+        <NotificationBell />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label="Open account menu"
+              className="flex min-h-11 items-center gap-3 rounded-lg px-2 py-1 text-left outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="hidden text-right sm:block">
+                <p className="max-w-48 truncate text-sm font-medium">{user.name}</p>
+                <Badge variant="secondary" className="text-xs">
+                  {ROLE_LABEL[user.role]}
+                </Badge>
+              </div>
+              <Avatar>
+                <AvatarImage src={user.image} alt={user.name} />
+                <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-60 max-w-[calc(100vw-2rem)]" sideOffset={8}>
+            <DropdownMenuLabel className="flex flex-col gap-1 px-2 py-2">
+              <span className="truncate font-semibold text-foreground">{user.name}</span>
+              <Badge variant="secondary" className="w-fit text-xs">{ROLE_LABEL[user.role]}</Badge>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
+              <Link href={dashboardPathForRole(user.role)}>
+                <LayoutDashboard /> Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
+              <Link href="/dashboard/profile">
+                <UserPen /> Update Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="min-h-10 cursor-pointer">
+              <Link href="/">
+                <Home /> Back to Home
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              disabled={signingOut}
+              className="min-h-10 cursor-pointer"
+              onSelect={(event) => {
+                event.preventDefault();
+                void handleSignOut();
+              }}
+            >
+              <LogOut /> {signingOut ? 'Signing out...' : 'Sign Out'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
@@ -10,19 +10,23 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { GoogleSignInButton } from '@/components/shared/google-sign-in-button';
 import { authClient } from '@/lib/auth-client';
-import { setToken } from '@/lib/api-client';
-import { dashboardPathForRole } from '@/lib/helpers';
+import { useAuth } from '@/lib/auth-context';
+import { authRedirect } from '@/lib/auth-redirect';
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const CLIENT_URL = process.env.NEXT_PUBLIC_CLIENT_URL;
 
 export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
+  const { user, loading, error: accountError, completeSignIn, refreshUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user && !loading) router.replace(authRedirect(redirect, user.role));
+  }, [user, loading, redirect, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,23 +40,12 @@ export default function SignInPage() {
         return;
       }
 
-      const jwtRes = await fetch(`${SERVER_URL}/api/jwt`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const { token } = await jwtRes.json();
-      setToken(token);
-
-      const meRes = await fetch(`${SERVER_URL}/api/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const profile = await meRes.json();
+      const profile = await completeSignIn(email);
 
       toast.success('Signed in successfully');
-      router.push(redirect || dashboardPathForRole(profile.role));
-    } catch {
-      toast.error('Invalid email or password');
+      router.replace(authRedirect(redirect, profile.role));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not sign in. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -66,6 +59,12 @@ export default function SignInPage() {
           <p className="mt-1 text-sm text-muted-foreground">Sign in to continue to your dashboard</p>
         </div>
 
+        {accountError && (
+          <div role="alert" className="space-y-2 rounded-md border p-3 text-sm">
+            <p>{accountError}</p>
+            <Button variant="outline" onClick={() => void refreshUser().catch(() => {})}>Retry loading account</Button>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
@@ -94,7 +93,7 @@ export default function SignInPage() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        <GoogleSignInButton callbackURL={`${CLIENT_URL}${redirect || dashboardPathForRole('customer')}`} />
+        <GoogleSignInButton callbackURL={`${CLIENT_URL}/sign-in${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`} />
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}

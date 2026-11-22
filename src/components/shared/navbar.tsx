@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, LayoutDashboard, UserPen, LogOut } from 'lucide-react';
 import { Logo } from './logo';
+import { NotificationBell } from './notification-bell';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -59,101 +60,104 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          {loading ? null : user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={user.image} alt={user.name} />
-                    <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="flex flex-col gap-1">
-                  <span className="font-semibold">{user.name}</span>
-                  <Badge variant="secondary" className="w-fit text-xs">
-                    {ROLE_LABEL[user.role]}
-                  </Badge>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push(dashboardPathForRole(user.role))}>
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
-                  <UserPen className="mr-2 h-4 w-4" />
-                  Update Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/sign-in">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </>
-          )}
-        </div>
+        <div className="flex items-center gap-3">
+          {user && <NotificationBell />}
+          <div className="hidden items-center gap-3 md:flex">
+            {loading ? null : user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user.image} alt={user.name} />
+                      <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="flex flex-col gap-1">
+                    <span className="font-semibold">{user.name}</span>
+                    <Badge variant="secondary" className="w-fit text-xs">
+                      {ROLE_LABEL[user.role]}
+                    </Badge>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push(dashboardPathForRole(user.role))}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
+                    <UserPen className="mr-2 h-4 w-4" />
+                    Update Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/sign-in">Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </>
+            )}
+          </div>
 
-        <Sheet>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-72">
-            <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-            <div className="mt-8 flex flex-col gap-6 px-4">
-              <nav className="flex flex-col gap-4">
-                {NAV_LINKS.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-base font-medium ${
-                      pathname === link.href ? 'text-primary' : 'text-foreground'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="flex flex-col gap-3 border-t pt-6">
-                {user ? (
-                  <>
-                    <Link href={dashboardPathForRole(user.role)} className="text-sm font-medium">
-                      Dashboard
+          <Sheet>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+              <div className="mt-8 flex flex-col gap-6 px-4">
+                <nav className="flex flex-col gap-4">
+                  {NAV_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`text-base font-medium ${
+                        pathname === link.href ? 'text-primary' : 'text-foreground'
+                      }`}
+                    >
+                      {link.label}
                     </Link>
-                    <Link href="/dashboard/profile" className="text-sm font-medium">
-                      Update Profile
-                    </Link>
-                    <Button variant="outline" onClick={handleSignOut}>
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="outline" asChild>
-                      <Link href="/sign-in">Sign In</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href="/sign-up">Sign Up</Link>
-                    </Button>
-                  </>
-                )}
+                  ))}
+                </nav>
+                <div className="flex flex-col gap-3 border-t pt-6">
+                  {user ? (
+                    <>
+                      <Link href={dashboardPathForRole(user.role)} className="text-sm font-medium">
+                        Dashboard
+                      </Link>
+                      <Link href="/dashboard/profile" className="text-sm font-medium">
+                        Update Profile
+                      </Link>
+                      <Button variant="outline" onClick={handleSignOut}>
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outline" asChild>
+                        <Link href="/sign-in">Sign In</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link href="/sign-up">Sign Up</Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

@@ -117,6 +117,26 @@ changing it on Vercel requires a new deployment.
 - `npm run test:images:host`: uploads a tiny test image using `.env.local` and checks that it loads; requires network access.
 - `npm run test:images:browser`: tests the three forms in Chromium with mocked authentication, API persistence, and ImgBB responses. Start the app on port 3019 (`npm run dev -- -p 3019`) and install Playwright separately or set `PLAYWRIGHT_MODULE` to an existing installation. Use `AUDIT_BASE_URL` to test another local port. These tests do not change production users or services.
 
+## Authentication and live notifications
+
+Sign-in and registration load the API profile into the shared auth state before
+navigating. Existing sessions visiting Sign In or Sign Up redirect to the correct
+role dashboard. Profile loading failures show a retry action.
+
+The bell in the public navigation and dashboard provides live order alerts, an
+unread count, notification links, and a saved on/off switch. The authenticated
+event stream reconnects automatically. Alerts cover new repair requests, status
+changes, cancellations, and payments while the site is open. This is an in-app
+notification feature; it does not register browser push notifications.
+
+Deploy the server changes before the client changes. Both use the existing API
+URL and JWT configuration; no additional environment variables are needed.
+
+- `npm run test:auth-notifications`: safe redirect and stream parsing tests.
+- `npm run test:auth-notifications:browser`: mocked login, registration, delayed
+  profile loading, retry, live alerts, saved preferences, and desktop/mobile tests.
+  Uses the same local server and Playwright setup as the image browser tests.
+
 ## npm Packages Used
 
 next, react, react-dom, tailwindcss, better-auth, date-fns, lucide-react, sonner, and the shadcn/ui component set (radix primitives, class-variance-authority, clsx, tailwind-merge)

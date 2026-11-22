@@ -9,7 +9,9 @@
     "lint": "eslint",
     "test:images": "node --test scripts/test-image-upload.cjs",
     "test:images:browser": "node scripts/image-upload-browser.cjs",
-    "test:images:host": "node --env-file=.env.local scripts/check-image-host.cjs"
+    "test:images:host": "node --env-file=.env.local scripts/check-image-host.cjs",
+    "test:auth-notifications": "node --test scripts/test-auth-notifications.cjs",
+    "test:auth-notifications:browser": "node scripts/auth-notifications-browser.cjs"
   },
   "dependencies": {
     "better-auth": "^1.7.27",

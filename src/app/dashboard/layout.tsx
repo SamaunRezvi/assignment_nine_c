@@ -7,14 +7,15 @@ import { DashboardSidebar } from '@/components/shared/dashboard-sidebar';
 import { DashboardTopbar } from '@/components/shared/dashboard-topbar';
 import { dashboardPathForRole } from '@/lib/helpers';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, error, refreshUser } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || error) return;
 
     if (!user) {
       router.replace(`/sign-in?redirect=${pathname}`);
@@ -24,7 +25,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (pathname !== '/dashboard/profile' && !pathname.startsWith(dashboardPathForRole(user.role))) {
       router.replace(dashboardPathForRole(user.role));
     }
-  }, [loading, user, pathname, router]);
+  }, [loading, error, user, pathname, router]);
+
+  if (error) return (
+    <div role="alert" className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
+      <p>{error}</p>
+      <Button onClick={() => void refreshUser().catch(() => {})}>Retry loading account</Button>
+    </div>
+  );
 
   if (loading || !user) {
     return (

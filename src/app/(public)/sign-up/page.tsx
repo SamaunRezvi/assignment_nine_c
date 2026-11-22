@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -10,11 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { GoogleSignInButton } from '@/components/shared/google-sign-in-button';
 import { authClient } from '@/lib/auth-client';
-import { setToken } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { dashboardPathForRole } from '@/lib/helpers';
 import type { Role } from '@/lib/types';
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 const CLIENT_URL = process.env.NEXT_PUBLIC_CLIENT_URL;
 
 function validatePassword(password: string) {
@@ -26,12 +25,17 @@ function validatePassword(password: string) {
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { user, loading, completeSignIn } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('customer');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user && !loading) router.replace(dashboardPathForRole(user.role));
+  }, [user, loading, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,18 +64,12 @@ export default function SignUpPage() {
         return;
       }
 
-      const jwtRes = await fetch(`${SERVER_URL}/api/jwt`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const { token } = await jwtRes.json();
-      setToken(token);
+      const profile = await completeSignIn(email);
 
       toast.success('Account created successfully');
-      router.push(dashboardPathForRole(role));
-    } catch {
-      toast.error('Could not create your account');
+      router.replace(dashboardPathForRole(profile.role));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not create your account');
     } finally {
       setSubmitting(false);
     }
