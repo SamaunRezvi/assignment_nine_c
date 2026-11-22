@@ -52,6 +52,14 @@ export interface Service {
   approvalStatus: ApprovalStatus;
   isAvailable: boolean;
   createdAt: string;
+  averageRating?: number;
+  reviewCount?: number;
+  isVerified?: boolean;
+}
+
+export interface StatusHistoryEntry {
+  status: string;
+  changedAt: string;
 }
 
 export interface Booking {
@@ -72,7 +80,20 @@ export interface Booking {
   status: BookingStatus;
   finalAmount: number;
   paymentStatus: PaymentStatus;
+  statusHistory?: StatusHistoryEntry[];
+  rating?: number;
+  review?: string;
   createdAt: string;
+}
+
+export interface TechnicianProfile {
+  name: string;
+  email: string;
+  image: string | null;
+  area: string;
+  bio: string;
+  isVerified: boolean;
+  services: Service[];
 }
 
 export interface Payment {

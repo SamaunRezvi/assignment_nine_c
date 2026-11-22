@@ -40,3 +40,7 @@ export function formatCurrency(amount: number) {
 export function formatDate(value: string | Date) {
   return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(value));
 }
+
+export function formatDateTime(value: string | Date) {
+  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+}
