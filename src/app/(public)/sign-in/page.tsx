@@ -14,6 +14,7 @@ import { setToken } from '@/lib/api-client';
 import { dashboardPathForRole } from '@/lib/helpers';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+const CLIENT_URL = process.env.NEXT_PUBLIC_CLIENT_URL;
 
 export default function SignInPage() {
   const router = useRouter();
@@ -93,7 +94,7 @@ export default function SignInPage() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        <GoogleSignInButton callbackURL={redirect || dashboardPathForRole('customer')} />
+        <GoogleSignInButton callbackURL={`${CLIENT_URL}${redirect || dashboardPathForRole('customer')}`} />
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}

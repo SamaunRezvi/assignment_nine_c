@@ -15,6 +15,7 @@ import { dashboardPathForRole } from '@/lib/helpers';
 import type { Role } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+const CLIENT_URL = process.env.NEXT_PUBLIC_CLIENT_URL;
 
 function validatePassword(password: string) {
   if (password.length < 6) return 'Password must be at least 6 characters';
@@ -137,7 +138,7 @@ export default function SignUpPage() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        <GoogleSignInButton callbackURL={dashboardPathForRole('customer')} />
+        <GoogleSignInButton callbackURL={`${CLIENT_URL}${dashboardPathForRole('customer')}`} />
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
