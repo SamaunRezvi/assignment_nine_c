@@ -54,7 +54,7 @@ export function RequestRepairDialog({ service }: { service: Service }) {
       setSubmitted(true);
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        toast.error('You already have an active request for this service');
+        toast.error(err.message || 'You already have an active request for this service');
       } else {
         toast.error('Could not send the request. Please try again.');
       }

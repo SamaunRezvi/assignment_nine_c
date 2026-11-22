@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ImageUpload } from '@/components/shared/image-upload';
+import { AvailabilityManager } from '@/components/shared/availability-manager';
 import { api } from '@/lib/api-client';
 import { uploadToImgBB } from '@/lib/imgbb';
 import { useAuth } from '@/lib/auth-context';
@@ -29,6 +30,7 @@ function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => 
   const [bio, setBio] = useState(user.bio ?? '');
   const [image, setImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [unavailableDates, setUnavailableDates] = useState(user.unavailableDates ?? []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -117,6 +119,10 @@ function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => 
           </Button>
         </form>
       </Card>
+
+      {user.role === 'technician' && (
+        <AvailabilityManager unavailableDates={unavailableDates} onChange={setUnavailableDates} />
+      )}
     </div>
   );
 }

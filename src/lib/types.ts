@@ -35,6 +35,7 @@ export interface AppUser {
   phone?: string;
   area?: string;
   bio?: string;
+  unavailableDates?: string[];
 }
 
 export interface Service {
