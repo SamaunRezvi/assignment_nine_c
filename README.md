@@ -8,13 +8,17 @@ Finding a trustworthy repair technician is hard, and paying before any work is d
 
 ## Live URL
 
-(to be added after deployment)
+https://fixmate-nu-five.vercel.app
 
 ## Test Accounts
 
-- Admin: (to be added)
-- Technician: (to be added)
-- Customer: (to be added)
+All seeded accounts use the password `Password123`.
+
+- Admin: admin@fixmate.test
+- Technician: rafiq.technician@fixmate.test
+- Technician: nadia.technician@fixmate.test
+- Customer: tanvir.customer@fixmate.test
+- Customer: sumaiya.customer@fixmate.test
 
 ## Key Features
 
@@ -41,4 +45,4 @@ next, react, react-dom, tailwindcss, better-auth, date-fns, lucide-react, sonner
 
 ## Environment Variables
 
-See `.env.example`: server URL, client URL, ImgBB API key, and BetterAuth secret and base URL.
+See `.env.example`: server URL, client URL, and ImgBB API key.
