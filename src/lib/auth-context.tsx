@@ -41,10 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const promise = (async () => {
       try {
         const signal = AbortSignal.timeout(20_000);
-        const jwtRes = await fetch(`${SERVER_URL}/api/jwt`, {
+        const jwtRes = await fetch('/api/jwt', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
+          credentials: 'include',
           signal,
         });
         if (!jwtRes.ok) throw new Error('Could not load your account. Please try again.');
