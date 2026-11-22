@@ -52,8 +52,8 @@ export function RateJobDialog({
       toast.success('Thank you for your feedback');
       onOpenChange(false);
       onRated();
-    } catch {
-      toast.error('Could not submit your rating');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not submit your rating');
     } finally {
       setSubmitting(false);
     }
@@ -74,6 +74,9 @@ export function RateJobDialog({
                 <button
                   key={star}
                   type="button"
+                  aria-label={`Rate ${star} ${star === 1 ? 'star' : 'stars'}`}
+                  aria-pressed={rating === star}
+                  disabled={submitting}
                   onClick={() => setRating(star)}
                   onMouseEnter={() => setHovered(star)}
                   onMouseLeave={() => setHovered(0)}

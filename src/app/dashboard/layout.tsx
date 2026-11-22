@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <DashboardSidebar role={user.role} />
         </div>
       </aside>
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <DashboardTopbar user={user} />
         <main className="flex-1 bg-muted/30 p-4 sm:p-6">{children}</main>
       </div>

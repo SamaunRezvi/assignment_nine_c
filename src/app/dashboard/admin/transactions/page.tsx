@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { BadgeDollarSign } from 'lucide-react';
 import {
   Table,
@@ -11,7 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { api } from '@/lib/api-client';
+import { Button } from '@/components/ui/button';
+import { useLiveResource } from '@/lib/use-live-resource';
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import type { Payment } from '@/lib/types';
 
@@ -21,17 +21,13 @@ interface TransactionsResponse {
 }
 
 export default function AdminTransactionsPage() {
-  const [data, setData] = useState<TransactionsResponse | null>(null);
-
-  useEffect(() => {
-    api.get<TransactionsResponse>('/api/admin/payments').then(setData);
-  }, []);
+  const { data, loading, error, refresh } = useLiveResource<TransactionsResponse>('/api/admin/payments');
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
-        <p className="text-muted-foreground">Every payment collected through FixMate.</p>
+        <p className="text-muted-foreground">Every payment recorded through FixMate. Updates automatically.</p>
       </div>
 
       <Card className="flex items-center gap-4 p-6">
@@ -40,13 +36,18 @@ export default function AdminTransactionsPage() {
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Total Revenue</p>
-          <p className="text-2xl font-bold">{formatCurrency(data?.totalRevenue ?? 0)}</p>
+          <p className="text-2xl font-bold">{data ? formatCurrency(data.totalRevenue) : '—'}</p>
         </div>
       </Card>
 
-      {!data ? (
+      {error && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border p-4 text-sm">
+        <p>Could not load the latest transactions. {data ? 'Showing the last available update.' : 'Please try again.'}</p>
+        <Button variant="outline" onClick={() => void refresh()}>Retry</Button>
+      </div>}
+
+      {loading ? (
         <p className="text-muted-foreground">Loading transactions...</p>
-      ) : data.payments.length === 0 ? (
+      ) : !data ? null : data.payments.length === 0 ? (
         <div className="rounded-lg border border-dashed p-16 text-center text-muted-foreground">
           No payments recorded yet.
         </div>

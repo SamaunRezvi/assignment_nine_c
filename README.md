@@ -129,6 +129,12 @@ event stream reconnects automatically. Alerts cover new repair requests, status
 changes, cancellations, and payments while the site is open. This is an in-app
 notification feature; it does not register browser push notifications.
 
+Manage Requests includes customer stars, written feedback, and review dates when
+available. Existing reviews without a saved date remain visible. Reviews and
+Admin Transactions refresh automatically while visible, independently of the
+notification toggle. Failed refreshes retain the last loaded data and offer Retry.
+New reviews also appear in the notification stream.
+
 Deploy the server changes before the client changes. Both use the existing API
 URL and JWT configuration; no additional environment variables are needed.
 
@@ -136,6 +142,8 @@ URL and JWT configuration; no additional environment variables are needed.
 - `npm run test:auth-notifications:browser`: mocked login, registration, delayed
   profile loading, retry, live alerts, saved preferences, and desktop/mobile tests.
   Uses the same local server and Playwright setup as the image browser tests.
+- `npm run test:reviews:browser`: customer-to-technician review updates, legacy
+  feedback, alert toggle independence, filters, and transaction refresh/recovery.
 
 ## npm Packages Used
 
