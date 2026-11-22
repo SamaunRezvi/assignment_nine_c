@@ -1,48 +1,119 @@
+[![FixMate animated illustration of a phone repair and a verified technician](/SamaunRezvi/assignment_nine_c/raw/main/public/readme-hero.svg)](/SamaunRezvi/assignment_nine_c/blob/main/public/readme-hero.svg)
+
+<div align="center">
+
 # FixMate
+
+[![Live Site](https://img.shields.io/badge/Live_Site-0D9488?style=for-the-badge&logo=vercel&logoColor=F0FDFA)](https://fixmate-nu-five.vercel.app)
+[![API repository](https://img.shields.io/badge/API_repository-134E4A?style=for-the-badge&logo=github&logoColor=2DD4BF)](https://github.com/SamaunRezvi/assignment_nine_s)
+[![Project overview](https://img.shields.io/badge/Project_overview-0F172A?style=for-the-badge)](#overview)
+[![Key features](https://img.shields.io/badge/Key_features-0F172A?style=for-the-badge)](#key-features)
+[![Get started locally](https://img.shields.io/badge/Get_started_locally-F59E0B?style=for-the-badge&logoColor=0F172A)](#get-started-locally)
+
+## Broken device? Get it fixed by verified technicians.
 
 FixMate is an on-demand device and home appliance repair service booking platform. Customers send repair requests to verified technicians, track every job through a clear status pipeline, and pay only after the work is completed.
 
-## Purpose
+**SMARTPHONES** · **LAPTOPS & PC** · **AC** · **REFRIGERATOR** · **TV** · **WASHING MACHINE** · **ELECTRICAL**
+
+</div>
+
+## Overview [](#overview)
 
 Finding a trustworthy repair technician is hard, and paying before any work is done is risky. FixMate fixes both sides of that problem: every booking has a visible status from request to completion, and payment only happens once the job is marked done.
 
-## Live URL
-
-https://fixmate-nu-five.vercel.app
+| | |
+|---|---|
+| Live site | https://fixmate-nu-five.vercel.app |
+| API repository | https://github.com/SamaunRezvi/assignment_nine_s |
+| API live URL | https://fixmate-server-qkj7.onrender.com |
 
 ## Test Accounts
 
 All seeded accounts use the password `Password123`.
 
-- Admin: admin@fixmate.test
-- Technician: rafiq.technician@fixmate.test
-- Technician: nadia.technician@fixmate.test
-- Customer: tanvir.customer@fixmate.test
-- Customer: sumaiya.customer@fixmate.test
+| Role | Email |
+|---|---|
+| Admin | admin@fixmate.test |
+| Technician | rafiq.technician@fixmate.test |
+| Technician | nadia.technician@fixmate.test |
+| Customer | tanvir.customer@fixmate.test |
+| Customer | sumaiya.customer@fixmate.test |
 
-## Key Features
+## How It Works
 
-- Role-based dashboards for customers, technicians and admins
-- BetterAuth authentication with email and password, plus JWT-protected API routes
-- Server-side search, filter, sort and pagination on the services listing
-- Strict server-enforced job status pipeline (requested, accepted, in-progress, completed, rejected, cancelled)
+**01 / FIND A SERVICE**
+
+Browse approved repair services by category, service mode, area or price, with server-side search and sorting.
+
+**02 / SEND A REQUEST**
+
+A customer sends a repair request with their phone, address, preferred date and a description of the problem.
+
+**03 / TRACK THE JOB**
+
+The technician moves the job through requested, accepted, in-progress and completed, with a visual timeline for every stage.
+
+**04 / PAY AFTER COMPLETION**
+
+Once a job is marked completed, the customer pays through Stripe Checkout for the exact amount the technician set.
+
+## Key Features [](#key-features)
+
+- Role-based dashboards for customers, technicians and admins, behind a single collapsible layout
+- BetterAuth authentication with email and password, plus Google social sign-in and JWT-protected API routes
+- Server-side search, filter (category, service mode, area), sort and pagination on the services listing
+- Strict server-enforced job status pipeline (requested, accepted, in-progress, completed, rejected, cancelled) with a visual step tracker per booking
 - Stripe Checkout for pay-after-service payments with success and cancel pages
+- Rating and review on paid bookings, shown as an average on service cards and details pages
+- Derived "verified" badge for technicians with at least one admin-approved service
+- Public technician profile pages listing a technician's approved services
 - ImgBB image uploads for service listings and profile photos
 - Admin tools for user role management, service approval and platform-wide monitoring
 - Responsive design across public pages and dashboards, with toasts, empty states and confirmation modals throughout
 
 ## Tech Stack
 
-- Next.js (App Router), TypeScript
-- Tailwind CSS, shadcn/ui
-- BetterAuth (client)
-- Stripe Checkout
-- ImgBB API
+[![Next.js, React, TypeScript, Tailwind CSS, Node.js, Express, MongoDB, Vercel](https://skillicons.dev/icons?i=nextjs,react,typescript,tailwind,nodejs,express,mongodb,vercel&theme=dark)](https://skillicons.dev)
+
+```mermaid
+flowchart LR
+    Browser -->|HTTPS| NextApp[Next.js on Vercel]
+    NextApp -->|REST + JWT| API[Express API on Render]
+    API --> Mongo[(MongoDB Atlas)]
+    NextApp -->|Checkout| Stripe[Stripe]
+    API -->|Webhook| Stripe
+    NextApp -->|Image upload| ImgBB
+```
+
+## Get Started Locally [](#get-started-locally)
+
+```bash
+git clone https://github.com/SamaunRezvi/assignment_nine_c.git
+cd assignment_nine_c
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+### Environment Variables
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SERVER_URL` | Base URL of the FixMate API |
+| `NEXT_PUBLIC_CLIENT_URL` | This app's own public URL |
+| `NEXT_PUBLIC_IMGBB_API_KEY` | ImgBB API key for image uploads |
 
 ## npm Packages Used
 
 next, react, react-dom, tailwindcss, better-auth, date-fns, lucide-react, sonner, and the shadcn/ui component set (radix primitives, class-variance-authority, clsx, tailwind-merge)
 
-## Environment Variables
+<div align="center">
 
-See `.env.example`: server URL, client URL, and ImgBB API key.
+**FIXMATE**
+
+Book the job. Pay after it's done.
+
+[Explore FixMate ↗](https://fixmate-nu-five.vercel.app) · [Back to top ↑](#fixmate)
+
+</div>
