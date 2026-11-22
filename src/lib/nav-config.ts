@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   BadgeDollarSign,
   UserPen,
+  BarChart3,
 } from 'lucide-react';
 import type { Role } from './types';
 
@@ -38,6 +39,7 @@ export const DASHBOARD_NAV: Record<Role, NavItem[]> = {
     { href: '/dashboard/admin/services', label: 'Service Approval', icon: ShieldCheck },
     { href: '/dashboard/admin/bookings', label: 'All Bookings', icon: CalendarCheck },
     { href: '/dashboard/admin/transactions', label: 'Transactions', icon: BadgeDollarSign },
+    { href: '/dashboard/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { href: '/dashboard/profile', label: 'Update Profile', icon: UserPen },
   ],
 };
