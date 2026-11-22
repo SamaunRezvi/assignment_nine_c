@@ -7,17 +7,16 @@ interface Slide {
   src: string;
   alt: string;
   position: string;
-  fit: 'cover' | 'contain';
   flip?: boolean;
 }
 
 // Positions are tuned so each subject stays right of the headline and fully in frame.
 const SLIDES: Slide[] = [
-  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: '0% 6%', fit: 'cover', flip: true },
-  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: '50% 61%', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: '50% 70%', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=2400&q=90', alt: 'A modern kitchen with appliances ready for service', position: 'center', fit: 'cover' },
-  { src: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=2400&q=90', alt: 'A repair tool resting on a workbench', position: '100% 50%', fit: 'contain' },
+  { src: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=2400&q=90', alt: 'A verified electrician at a job site', position: '0% 6%', flip: true },
+  { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=2400&q=90', alt: 'A technician diagnosing electronics in a repair lab', position: '50% 61%' },
+  { src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=2400&q=90', alt: 'A technician reviewing repair schematics and tools', position: '50% 70%' },
+  { src: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=2400&q=90', alt: 'A modern kitchen with appliances ready for service', position: 'center' },
+  { src: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=2400&q=90', alt: 'An electrician repairing a wall switch box', position: '0% 33%', flip: true },
 ];
 
 const SLIDE_DURATION = 5000;
@@ -41,21 +40,12 @@ export function HeroSlider() {
           style={{ opacity: i === active ? 1 : 0 }}
           aria-hidden={i !== active}
         >
-          {slide.fit === 'contain' && (
-            <Image
-              src={slide.src}
-              alt=""
-              fill
-              sizes="100vw"
-              className="scale-110 object-cover blur-2xl brightness-75"
-            />
-          )}
           <Image
             src={slide.src}
             alt={slide.alt}
             fill
             sizes="100vw"
-            className={slide.fit === 'contain' ? 'object-contain' : 'object-cover'}
+            className="object-cover"
             style={{
               objectPosition: slide.position,
               transform: slide.flip ? 'scaleX(-1)' : undefined,
