@@ -18,8 +18,8 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
           <Link key={action.href} href={action.href}>
             <Card className="flex h-full flex-row items-start gap-3 p-4 transition-colors hover:border-primary">
               <action.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-              <div>
-                <p className="font-medium">{action.label}</p>
+              <div className="min-w-0">
+                <p className="truncate font-medium">{action.label}</p>
                 <p className="text-sm text-muted-foreground">{action.description}</p>
               </div>
             </Card>

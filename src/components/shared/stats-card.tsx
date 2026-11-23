@@ -12,12 +12,12 @@ export function StatsCard({
 }) {
   return (
     <Card className="flex items-center gap-4 p-6">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
         <Icon className="h-6 w-6" />
       </div>
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-bold">{value}</p>
+      <div className="min-w-0">
+        <p className="truncate text-sm text-muted-foreground">{label}</p>
+        <p className="truncate text-2xl font-bold">{value}</p>
       </div>
     </Card>
   );
