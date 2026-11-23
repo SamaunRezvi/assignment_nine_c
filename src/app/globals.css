@@ -148,6 +148,19 @@
   input[type='date']::-webkit-date-and-time-value {
     text-align: left;
   }
+  /* Sonner stretches every toast to the full viewport width below 600px,
+     turning the top-right pill into a full-width banner on phones. Cap it
+     back to a right-aligned card so mobile matches the desktop look. */
+  @media (max-width: 600px) {
+    [data-sonner-toaster] {
+      width: auto;
+      max-width: calc(100% - 2rem);
+    }
+    [data-sonner-toaster] [data-sonner-toast] {
+      width: 356px;
+      max-width: calc(100vw - 2rem);
+    }
+  }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
