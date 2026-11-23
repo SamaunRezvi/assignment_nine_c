@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CalendarX, ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { CalendarX, ChevronDown, ChevronUp, Star, Download } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -26,6 +26,7 @@ import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/stat
 import { BookingTimeline } from '@/components/shared/booking-timeline';
 import { RateJobDialog } from '@/components/shared/rate-job-dialog';
 import { api } from '@/lib/api-client';
+import { downloadInvoice } from '@/lib/download-invoice';
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import type { Booking } from '@/lib/types';
 
@@ -72,6 +73,14 @@ export default function CustomerBookingsPage() {
     } catch {
       toast.error('Could not start the payment');
       setPayingId(null);
+    }
+  }
+
+  async function handleDownloadInvoice(booking: Booking) {
+    try {
+      await downloadInvoice(booking._id);
+    } catch {
+      toast.error('Could not download the invoice');
     }
   }
 
@@ -154,6 +163,12 @@ export default function CustomerBookingsPage() {
                             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                             {booking.rating}
                           </span>
+                        )}
+                        {booking.paymentStatus === 'paid' && (
+                          <Button variant="outline" size="sm" onClick={() => handleDownloadInvoice(booking)}>
+                            <Download className="h-3.5 w-3.5" />
+                            Invoice
+                          </Button>
                         )}
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/dashboard/bookings/${booking._id}`}>Open</Link>

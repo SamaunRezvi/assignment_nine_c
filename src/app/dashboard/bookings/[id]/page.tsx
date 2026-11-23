@@ -3,13 +3,15 @@
 import { use, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Star } from 'lucide-react';
+import { ArrowLeft, Star, Download } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
 import { BookingTimeline } from '@/components/shared/booking-timeline';
 import { useAuth } from '@/lib/auth-context';
 import { api, ApiError } from '@/lib/api-client';
+import { downloadInvoice } from '@/lib/download-invoice';
 import { formatCurrency, formatDate, dashboardPathForRole } from '@/lib/helpers';
 import type { Booking } from '@/lib/types';
 
@@ -56,11 +58,23 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
         </Link>
       </Button>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{booking.serviceTitle}</h1>
-        <p className="text-muted-foreground">
-          {viewerRole === 'technician' ? `Requested by ${booking.customerName}` : `Technician: ${booking.technicianName}`}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{booking.serviceTitle}</h1>
+          <p className="text-muted-foreground">
+            {viewerRole === 'technician' ? `Requested by ${booking.customerName}` : `Technician: ${booking.technicianName}`}
+          </p>
+        </div>
+        {viewerRole === 'customer' && booking.paymentStatus === 'paid' && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => downloadInvoice(booking._id).catch(() => toast.error('Could not download the invoice'))}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Invoice
+          </Button>
+        )}
       </div>
 
       <Card className="space-y-6 p-6">

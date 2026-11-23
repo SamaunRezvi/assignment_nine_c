@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Receipt } from 'lucide-react';
+import { toast } from 'sonner';
+import { Receipt, Download } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -10,7 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api-client';
+import { downloadInvoice } from '@/lib/download-invoice';
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import type { Payment } from '@/lib/types';
 
@@ -53,6 +56,7 @@ export default function CustomerPaymentsPage() {
               <TableHead>Amount</TableHead>
               <TableHead>Transaction ID</TableHead>
               <TableHead>Paid On</TableHead>
+              <TableHead className="text-right">Invoice</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -63,6 +67,16 @@ export default function CustomerPaymentsPage() {
                 <TableCell>{formatCurrency(payment.amount)}</TableCell>
                 <TableCell className="font-mono text-xs">{payment.transactionId}</TableCell>
                 <TableCell>{formatDate(payment.paidAt)}</TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadInvoice(payment.bookingId).catch(() => toast.error('Could not download the invoice'))}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
