@@ -71,15 +71,15 @@ export function ShiftLockPanel() {
           Lock a date and shift once you&apos;re done assigning time slots for it. New requests for that shift will stop.
         </p>
       </div>
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="space-y-1.5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <div className="min-w-0 space-y-1.5 sm:flex-1">
           <Label htmlFor="lockDate">Date</Label>
-          <Input id="lockDate" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} />
+          <Input id="lockDate" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} className="w-full" />
         </div>
-        <div className="space-y-1.5">
+        <div className="min-w-0 space-y-1.5 sm:flex-1">
           <Label htmlFor="lockShift">Shift</Label>
           <Select value={shift} onValueChange={(value) => setShift(value as Shift)}>
-            <SelectTrigger id="lockShift" className="w-44">
+            <SelectTrigger id="lockShift" className="w-full sm:w-44">
               <SelectValue placeholder="Select a shift" />
             </SelectTrigger>
             <SelectContent>
@@ -91,7 +91,7 @@ export function ShiftLockPanel() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleLock} disabled={busy}>
+        <Button onClick={handleLock} disabled={busy} className="w-full sm:w-auto">
           <Lock className="h-4 w-4" /> Lock Shift
         </Button>
       </div>

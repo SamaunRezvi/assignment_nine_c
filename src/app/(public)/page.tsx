@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ServiceCard } from '@/components/shared/service-card';
 import { HeroSlider } from '@/components/shared/hero-slider';
+import { BecomeTechnicianButton } from '@/components/shared/become-technician-button';
 import type { Service } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -76,9 +77,7 @@ export default async function HomePage() {
               <Button size="lg" variant="secondary" asChild>
                 <Link href="/services">Browse Services</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>
-                <Link href="/sign-up">Become a Technician</Link>
-              </Button>
+              <BecomeTechnicianButton />
             </div>
           </div>
         </div>

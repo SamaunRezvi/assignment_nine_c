@@ -10,7 +10,7 @@ export function RatingStars({ rating, reviewCount, size = 'sm' }: RatingStarsPro
   const starSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-5 w-5';
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="inline-flex items-center gap-1.5">
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star

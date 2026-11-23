@@ -71,12 +71,12 @@ export default function TechnicianAvailabilityPage() {
       </div>
 
       <Card className="p-6">
-        <form onSubmit={handleBlock} className="flex flex-wrap items-end gap-3">
-          <div className="space-y-1.5">
+        <form onSubmit={handleBlock} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="min-w-0 flex-1 space-y-1.5">
             <label htmlFor="newDate" className="text-sm font-medium">Mark a date unavailable</label>
-            <Input id="newDate" type="date" min={today()} value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+            <Input id="newDate" type="date" min={today()} value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full" />
           </div>
-          <Button type="submit" disabled={!newDate || saving}>
+          <Button type="submit" disabled={!newDate || saving} className="w-full sm:w-auto">
             {saving ? 'Saving...' : 'Block Date'}
           </Button>
         </form>

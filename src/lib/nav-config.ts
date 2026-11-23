@@ -11,6 +11,7 @@ import {
   BadgeDollarSign,
   UserPen,
   BarChart3,
+  Search,
 } from 'lucide-react';
 import type { Role } from './types';
 
@@ -23,6 +24,7 @@ export interface NavItem {
 export const DASHBOARD_NAV: Record<Role, NavItem[]> = {
   customer: [
     { href: '/dashboard/customer', label: 'Overview', icon: LayoutDashboard },
+    { href: '/services', label: 'Browse Services', icon: Search },
     { href: '/dashboard/customer/bookings', label: 'My Bookings', icon: CalendarCheck },
     { href: '/dashboard/customer/payments', label: 'Payment History', icon: Receipt },
     { href: '/dashboard/profile', label: 'Update Profile', icon: UserPen },
