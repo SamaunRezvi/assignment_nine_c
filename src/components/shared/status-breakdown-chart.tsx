@@ -12,6 +12,7 @@ const STATUS_COLOR: Record<BookingStatus, string> = {
   completed: '#10b981',
   rejected: '#ef4444',
   cancelled: '#64748b',
+  'reschedule-proposed': '#f97316',
 };
 
 export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {

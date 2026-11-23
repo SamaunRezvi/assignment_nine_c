@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
 import { BookingTimeline } from '@/components/shared/booking-timeline';
-import { formatCurrency, formatDate } from '@/lib/helpers';
+import { formatCurrency, formatDate, SHIFT_LABEL } from '@/lib/helpers';
 import type { Booking, Role } from '@/lib/types';
 
 interface BookingDetailDialogProps {
@@ -54,7 +54,26 @@ export function BookingDetailDialog({ booking, viewerRole, onOpenChange }: Booki
                 <p className="text-muted-foreground">Amount</p>
                 <p className="font-medium">{formatCurrency(booking.finalAmount)}</p>
               </div>
+              <div>
+                <p className="text-muted-foreground">Shift</p>
+                <p className="font-medium">{SHIFT_LABEL[booking.shift]}</p>
+              </div>
+              {booking.assignedTimeSlot && (
+                <div>
+                  <p className="text-muted-foreground">Time Slot</p>
+                  <p className="font-medium">{booking.assignedTimeSlot}</p>
+                </div>
+              )}
             </div>
+
+            {booking.status === 'reschedule-proposed' && booking.proposedDate && booking.proposedShift && (
+              <div className="rounded-md border border-orange-200 bg-orange-50 p-3 text-sm">
+                <p className="font-medium text-orange-700">
+                  Proposed: {formatDate(booking.proposedDate)}, {SHIFT_LABEL[booking.proposedShift]}
+                </p>
+                {booking.rescheduleMessage && <p className="mt-1 text-muted-foreground">&quot;{booking.rescheduleMessage}&quot;</p>}
+              </div>
+            )}
 
             {viewerRole !== 'technician' && (
               <div className="space-y-1 text-sm">

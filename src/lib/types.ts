@@ -6,9 +6,19 @@ export type BookingStatus =
   | 'rejected'
   | 'in-progress'
   | 'completed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'reschedule-proposed';
 
 export type PaymentStatus = 'unpaid' | 'paid';
+
+export type Shift = 'morning' | 'noon' | 'evening' | 'night';
+
+export const SHIFTS: { value: Shift; label: string }[] = [
+  { value: 'morning', label: 'Morning (8 AM - 12 PM)' },
+  { value: 'noon', label: 'Noon (12 PM - 4 PM)' },
+  { value: 'evening', label: 'Evening (4 PM - 8 PM)' },
+  { value: 'night', label: 'Night (8 PM - 11 PM)' },
+];
 
 export type ServiceMode = 'Home Visit' | 'Shop Drop-off';
 
@@ -36,6 +46,7 @@ export interface AppUser {
   area?: string;
   bio?: string;
   unavailableDates?: string[];
+  lockedShifts?: { date: string; shift: Shift }[];
 }
 
 export interface Service {
@@ -77,6 +88,11 @@ export interface Booking {
   customerPhone: string;
   address: string;
   preferredDate: string;
+  shift: Shift;
+  assignedTimeSlot?: string;
+  proposedDate?: string;
+  proposedShift?: Shift;
+  rescheduleMessage?: string;
   problemDescription: string;
   status: BookingStatus;
   finalAmount: number;

@@ -22,16 +22,20 @@ import {
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
 import { CompleteJobDialog } from '@/components/shared/complete-job-dialog';
 import { BookingDetailDialog } from '@/components/shared/booking-detail-dialog';
+import { AcceptBookingDialog } from '@/components/shared/accept-booking-dialog';
+import { ProposeRescheduleDialog } from '@/components/shared/propose-reschedule-dialog';
+import { ShiftLockPanel } from '@/components/shared/shift-lock-panel';
 import { RatingStars } from '@/components/shared/rating-stars';
 import { useLiveResource } from '@/lib/use-live-resource';
 import { api } from '@/lib/api-client';
-import { formatDate } from '@/lib/helpers';
+import { formatDate, SHIFT_LABEL } from '@/lib/helpers';
 import type { Booking, BookingStatus } from '@/lib/types';
 
 const STATUS_FILTERS: { value: string; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'requested', label: 'Requested' },
   { value: 'accepted', label: 'Accepted' },
+  { value: 'reschedule-proposed', label: 'Reschedule Proposed' },
   { value: 'in-progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
 ];
@@ -40,6 +44,8 @@ export default function TechnicianRequestsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [completeTarget, setCompleteTarget] = useState<Booking | null>(null);
   const [detailTarget, setDetailTarget] = useState<Booking | null>(null);
+  const [acceptTarget, setAcceptTarget] = useState<Booking | null>(null);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
 
   const query = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
   const { data, loading, error, refresh: loadBookings } = useLiveResource<Booking[]>(`/api/bookings/technician${query}`);
@@ -59,15 +65,20 @@ export default function TechnicianRequestsPage() {
     switch (booking.status) {
       case 'requested':
         return (
-          <div className="flex justify-end gap-2">
-            <Button size="sm" onClick={() => updateStatus(booking, 'accepted')}>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button size="sm" onClick={() => setAcceptTarget(booking)}>
               Accept
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setRescheduleTarget(booking)}>
+              Reschedule
             </Button>
             <Button size="sm" variant="destructive" onClick={() => updateStatus(booking, 'rejected')}>
               Reject
             </Button>
           </div>
         );
+      case 'reschedule-proposed':
+        return <span className="text-sm text-muted-foreground">Awaiting customer response</span>;
       case 'accepted':
         return (
           <Button size="sm" onClick={() => updateStatus(booking, 'in-progress')}>
@@ -110,6 +121,8 @@ export default function TechnicianRequestsPage() {
         </Select>
       </div>
 
+      <ShiftLockPanel />
+
       {error && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border p-4 text-sm">
         <p>Could not load the latest requests. {data ? 'Showing the last available update.' : 'Please try again.'}</p>
         <Button variant="outline" onClick={() => void loadBookings()}>Retry</Button>
@@ -129,6 +142,7 @@ export default function TechnicianRequestsPage() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Preferred Date</TableHead>
+                <TableHead>Shift</TableHead>
                 <TableHead>Problem</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Customer Rating</TableHead>
@@ -143,6 +157,10 @@ export default function TechnicianRequestsPage() {
                   <TableCell>{booking.customerPhone}</TableCell>
                   <TableCell className="max-w-40 truncate">{booking.address}</TableCell>
                   <TableCell>{formatDate(booking.preferredDate)}</TableCell>
+                  <TableCell className="whitespace-normal">
+                    <div>{SHIFT_LABEL[booking.shift]}</div>
+                    {booking.assignedTimeSlot && <div className="text-xs text-muted-foreground">Slot: {booking.assignedTimeSlot}</div>}
+                  </TableCell>
                   <TableCell className="max-w-56 truncate">{booking.problemDescription}</TableCell>
                   <TableCell>
                     <BookingStatusBadge status={booking.status} />
@@ -180,6 +198,24 @@ export default function TechnicianRequestsPage() {
       )}
 
       <BookingDetailDialog booking={detailTarget} viewerRole="technician" onOpenChange={(open) => !open && setDetailTarget(null)} />
+
+      {acceptTarget && (
+        <AcceptBookingDialog
+          booking={acceptTarget}
+          open={!!acceptTarget}
+          onOpenChange={(open) => !open && setAcceptTarget(null)}
+          onAccepted={loadBookings}
+        />
+      )}
+
+      {rescheduleTarget && (
+        <ProposeRescheduleDialog
+          booking={rescheduleTarget}
+          open={!!rescheduleTarget}
+          onOpenChange={(open) => !open && setRescheduleTarget(null)}
+          onProposed={loadBookings}
+        />
+      )}
     </div>
   );
 }

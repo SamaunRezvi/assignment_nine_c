@@ -15,9 +15,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { api, ApiError } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
-import type { Service } from '@/lib/types';
+import { SHIFTS, type Service, type Shift } from '@/lib/types';
 
 export function RequestRepairDialog({ service }: { service: Service }) {
   const { user } = useAuth();
@@ -27,6 +28,7 @@ export function RequestRepairDialog({ service }: { service: Service }) {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
+  const [shift, setShift] = useState<Shift | ''>('');
   const [problemDescription, setProblemDescription] = useState('');
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
@@ -51,6 +53,11 @@ export function RequestRepairDialog({ service }: { service: Service }) {
       return;
     }
 
+    if (!shift) {
+      setError('Please select a shift');
+      return;
+    }
+
     if (problemDescription.trim().length < 20) {
       setError('Problem description must be at least 20 characters');
       return;
@@ -63,6 +70,7 @@ export function RequestRepairDialog({ service }: { service: Service }) {
         phone,
         address,
         preferredDate,
+        shift,
         problemDescription,
       });
       toast.success('Repair request sent successfully');
@@ -135,6 +143,21 @@ export function RequestRepairDialog({ service }: { service: Service }) {
                   }}
                 />
                 {dateError && <p className="text-sm text-destructive">{dateError}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="shift">Preferred Shift</Label>
+                <Select required value={shift} onValueChange={(value) => setShift(value as Shift)}>
+                  <SelectTrigger id="shift" className="w-full">
+                    <SelectValue placeholder="Select a shift" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SHIFTS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {s.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="problemDescription">Problem Description</Label>

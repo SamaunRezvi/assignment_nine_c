@@ -27,7 +27,7 @@ import { BookingTimeline } from '@/components/shared/booking-timeline';
 import { RateJobDialog } from '@/components/shared/rate-job-dialog';
 import { api } from '@/lib/api-client';
 import { downloadInvoice } from '@/lib/download-invoice';
-import { formatCurrency, formatDate } from '@/lib/helpers';
+import { formatCurrency, formatDate, SHIFT_LABEL } from '@/lib/helpers';
 import type { Booking } from '@/lib/types';
 
 export default function CustomerBookingsPage() {
@@ -35,7 +35,9 @@ export default function CustomerBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
   const [rateTarget, setRateTarget] = useState<Booking | null>(null);
+  const [rejectRescheduleTarget, setRejectRescheduleTarget] = useState<Booking | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [respondingId, setRespondingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function loadBookings() {
@@ -60,6 +62,20 @@ export default function CustomerBookingsPage() {
       loadBookings();
     } catch {
       toast.error('Could not cancel this booking');
+    }
+  }
+
+  async function handleRescheduleResponse(booking: Booking, accept: boolean) {
+    setRespondingId(booking._id);
+    try {
+      await api.patch(`/api/bookings/${booking._id}/reschedule-response`, { accept });
+      toast.success(accept ? 'New time accepted' : 'Reschedule rejected');
+      setRejectRescheduleTarget(null);
+      loadBookings();
+    } catch {
+      toast.error('Could not respond to this reschedule proposal');
+    } finally {
+      setRespondingId(null);
     }
   }
 
@@ -148,6 +164,20 @@ export default function CustomerBookingsPage() {
                             Cancel
                           </Button>
                         )}
+                        {booking.status === 'reschedule-proposed' && (
+                          <>
+                            <Button
+                              size="sm"
+                              disabled={respondingId === booking._id}
+                              onClick={() => handleRescheduleResponse(booking, true)}
+                            >
+                              Accept New Time
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => setRejectRescheduleTarget(booking)}>
+                              Reject
+                            </Button>
+                          </>
+                        )}
                         {booking.status === 'completed' && booking.paymentStatus === 'unpaid' && (
                           <Button size="sm" disabled={payingId === booking._id} onClick={() => handlePayNow(booking)}>
                             {payingId === booking._id ? 'Redirecting...' : 'Pay Now'}
@@ -192,6 +222,18 @@ export default function CustomerBookingsPage() {
                         ) : (
                           <p className="text-sm text-muted-foreground">No timeline available for this booking.</p>
                         )}
+                        <p className="mt-2 text-sm text-muted-foreground">Shift: {SHIFT_LABEL[booking.shift]}</p>
+                        {booking.assignedTimeSlot && (
+                          <p className="text-sm text-muted-foreground">Confirmed time slot: {booking.assignedTimeSlot}</p>
+                        )}
+                        {booking.status === 'reschedule-proposed' && booking.proposedDate && booking.proposedShift && (
+                          <div className="mt-2 rounded-md border border-orange-200 bg-orange-50 p-3 text-sm">
+                            <p className="font-medium text-orange-700">
+                              Technician proposed {formatDate(booking.proposedDate)}, {SHIFT_LABEL[booking.proposedShift]}
+                            </p>
+                            {booking.rescheduleMessage && <p className="mt-1 text-muted-foreground">&quot;{booking.rescheduleMessage}&quot;</p>}
+                          </div>
+                        )}
                         {booking.review && (
                           <p className="mt-3 text-sm italic text-muted-foreground">&quot;{booking.review}&quot;</p>
                         )}
@@ -219,6 +261,29 @@ export default function CustomerBookingsPage() {
             </Button>
             <Button variant="destructive" onClick={handleCancel}>
               Cancel Booking
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!rejectRescheduleTarget} onOpenChange={(open) => !open && setRejectRescheduleTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject this new time?</DialogTitle>
+            <DialogDescription>
+              This will reject the technician&apos;s proposed time for {rejectRescheduleTarget?.serviceTitle}. The request will be marked as rejected and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectRescheduleTarget(null)}>
+              Keep Reviewing
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={respondingId === rejectRescheduleTarget?._id}
+              onClick={() => rejectRescheduleTarget && handleRescheduleResponse(rejectRescheduleTarget, false)}
+            >
+              Reject
             </Button>
           </DialogFooter>
         </DialogContent>

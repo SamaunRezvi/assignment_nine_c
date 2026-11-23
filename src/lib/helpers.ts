@@ -1,4 +1,11 @@
-import type { BookingStatus, PaymentStatus, Role } from './types';
+import type { BookingStatus, PaymentStatus, Role, Shift } from './types';
+
+export const SHIFT_LABEL: Record<Shift, string> = {
+  morning: 'Morning (8 AM - 12 PM)',
+  noon: 'Noon (12 PM - 4 PM)',
+  evening: 'Evening (4 PM - 8 PM)',
+  night: 'Night (8 PM - 11 PM)',
+};
 
 export const STATUS_LABEL: Record<BookingStatus, string> = {
   requested: 'Requested',
@@ -7,6 +14,7 @@ export const STATUS_LABEL: Record<BookingStatus, string> = {
   completed: 'Completed',
   rejected: 'Rejected',
   cancelled: 'Cancelled',
+  'reschedule-proposed': 'Reschedule Proposed',
 };
 
 export const STATUS_BADGE_CLASS: Record<BookingStatus, string> = {
@@ -16,6 +24,7 @@ export const STATUS_BADGE_CLASS: Record<BookingStatus, string> = {
   completed: 'bg-emerald-100 text-emerald-700 border-emerald-200',
   rejected: 'bg-red-100 text-red-700 border-red-200',
   cancelled: 'bg-slate-100 text-slate-600 border-slate-200',
+  'reschedule-proposed': 'bg-orange-100 text-orange-700 border-orange-200',
 };
 
 export const PAYMENT_BADGE_CLASS: Record<PaymentStatus, string> = {
