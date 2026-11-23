@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { NotificationBell } from './notification-bell';
+import { queueFlashToast } from './flash-toast';
 import { dashboardPathForRole, ROLE_LABEL } from '@/lib/helpers';
 import { authClient } from '@/lib/auth-client';
 import { clearToken } from '@/lib/api-client';
@@ -41,7 +42,7 @@ export function DashboardTopbar({ user }: { user: AppUser }) {
       const { error } = await authClient.signOut();
       if (error) throw new Error(error.message || 'Could not sign out. Please try again.');
       clearToken();
-      toast.success('Signed out successfully');
+      queueFlashToast('Signed out successfully');
       // Start a fresh document after ending the session so the protected
       // dashboard's redirect cannot race the navigation to the home page.
       window.location.replace('/');

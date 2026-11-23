@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { NotificationProvider } from '@/lib/notification-context';
 import { Toaster } from '@/components/ui/sonner';
+import { FlashToast } from '@/components/shared/flash-toast';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -42,7 +43,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               position="top-right"
               offset={{ top: 76, right: 16 }}
               mobileOffset={{ top: 76, right: 16 }}
+              duration={3000}
             />
+            <FlashToast />
           </NotificationProvider>
         </AuthProvider>
       </body>
