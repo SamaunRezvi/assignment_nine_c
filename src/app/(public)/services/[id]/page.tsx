@@ -4,12 +4,13 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { MapPin, Clock, Wrench } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { RequestRepairGate } from '@/components/shared/request-repair-gate';
 import { RatingStars } from '@/components/shared/rating-stars';
 import { VerifiedBadge } from '@/components/shared/verified-badge';
 import { getFormat, getLabels } from '@/i18n/server';
-import type { Service } from '@/lib/types';
+import type { Service, TechnicianProfile } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -17,6 +18,15 @@ async function getService(id: string): Promise<Service | null> {
   const res = await fetch(`${SERVER_URL}/api/services/${id}`, { cache: 'no-store' });
   if (!res.ok) return null;
   return res.json();
+}
+
+async function getTechnician(email: string): Promise<TechnicianProfile | null> {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/technicians/${encodeURIComponent(email)}`, { cache: 'no-store' });
+    return res.ok ? res.json() : null;
+  } catch {
+    return null;
+  }
 }
 
 export default async function ServiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +37,7 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
     notFound();
   }
 
+  const technician = await getTechnician(service.technicianEmail);
   const t = await getTranslations('services');
   const labels = await getLabels();
   const format = await getFormat();
@@ -86,7 +97,11 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
 
           <Card className="space-y-2 p-6">
             <p className="text-xs font-semibold uppercase text-muted-foreground">{t('technician')}</p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12 shrink-0">
+                <AvatarImage src={technician?.image ?? undefined} alt={service.technicianName} />
+                <AvatarFallback>{service.technicianName.charAt(0)}</AvatarFallback>
+              </Avatar>
               <Link
                 href={`/technicians/${encodeURIComponent(service.technicianEmail)}`}
                 className="text-lg font-semibold hover:text-primary hover:underline"
@@ -95,7 +110,8 @@ export default async function ServiceDetailsPage({ params }: { params: Promise<{
               </Link>
               {service.isVerified && <VerifiedBadge />}
             </div>
-            <p className="text-sm text-muted-foreground">{labels.area(service.serviceArea)}</p>
+            <p className="text-sm text-muted-foreground">{labels.area(technician?.area || service.serviceArea)}</p>
+            {technician?.bio && <p className="text-sm leading-relaxed text-muted-foreground">{technician.bio}</p>}
           </Card>
         </div>
       </div>

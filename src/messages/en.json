@@ -63,7 +63,8 @@
       "action": "Action",
       "invoice": "Invoice",
       "completedJobs": "Completed Jobs",
-      "averageRating": "Average Rating"
+      "averageRating": "Average Rating",
+      "joined": "Joined"
     }
   },
   "labels": {
@@ -167,17 +168,38 @@
     "howTitle": "How FixMate Works",
     "step": "Step {step, number}",
     "steps": {
-      "find": { "title": "Find a Service", "desc": "Browse verified repair services by category or search for exactly what you need." },
-      "request": { "title": "Send a Request", "desc": "Share the problem, your address and a preferred date in a quick request form." },
-      "fix": { "title": "Technician Fixes It", "desc": "A verified technician accepts the job and keeps you updated at every step." },
-      "pay": { "title": "Pay After Completion", "desc": "Review the final amount and pay securely only once the job is done." }
+      "find": {
+        "title": "Find a Service",
+        "desc": "Browse verified repair services by category or search for exactly what you need."
+      },
+      "request": {
+        "title": "Send a Request",
+        "desc": "Share the problem, your address and a preferred date in a quick request form."
+      },
+      "fix": {
+        "title": "Technician Fixes It",
+        "desc": "A verified technician accepts the job and keeps you updated at every step."
+      },
+      "pay": {
+        "title": "Pay After Completion",
+        "desc": "Review the final amount and pay securely only once the job is done."
+      }
     },
     "categoriesTitle": "Popular Categories",
     "whyTitle": "Why Choose FixMate",
     "trust": {
-      "verified": { "label": "Verified Technicians", "value": "Every provider is reviewed before listing" },
-      "fast": { "label": "Fast Response", "value": "Most requests get a reply within hours" },
-      "payAfter": { "label": "Pay After Service", "value": "No upfront payment, ever" }
+      "verified": {
+        "label": "Verified Technicians",
+        "value": "Every provider is reviewed before listing"
+      },
+      "fast": {
+        "label": "Fast Response",
+        "value": "Most requests get a reply within hours"
+      },
+      "payAfter": {
+        "label": "Pay After Service",
+        "value": "No upfront payment, ever"
+      }
     },
     "slides": {
       "electrician": "A verified electrician at a job site",
@@ -191,9 +213,18 @@
     "title": "About FixMate",
     "intro": "Finding a repair technician you can actually trust is harder than it should be. FixMate was built to fix that, for both customers who need reliable repairs and technicians who deserve a proper place to run their work.",
     "values": {
-      "verified": { "title": "Verified Technicians", "desc": "Every technician on FixMate is reviewed and approved by our team before their services go live, so you always know who is coming to fix your device." },
-      "communication": { "title": "Transparent Communication", "desc": "Every job has a visible status, from requested to completed, so you always know exactly where things stand without having to call anyone." },
-      "payAfter": { "title": "Pay After Service", "desc": "You never pay a deposit or an upfront fee. Payment only happens once your technician marks the job complete and you confirm you are happy." }
+      "verified": {
+        "title": "Verified Technicians",
+        "desc": "Every technician on FixMate is reviewed and approved by our team before their services go live, so you always know who is coming to fix your device."
+      },
+      "communication": {
+        "title": "Transparent Communication",
+        "desc": "Every job has a visible status, from requested to completed, so you always know exactly where things stand without having to call anyone."
+      },
+      "payAfter": {
+        "title": "Pay After Service",
+        "desc": "You never pay a deposit or an upfront fee. Payment only happens once your technician marks the job complete and you confirm you are happy."
+      }
     },
     "howTitle": "How It Works",
     "stepLabel": "Step {step, number}: ",
@@ -369,10 +400,22 @@
       "noBookings": "You have not booked a repair yet.",
       "breakdownTitle": "Booking Status Breakdown",
       "actions": {
-        "browse": { "label": "Browse Services", "description": "Find a verified technician for your next repair." },
-        "bookings": { "label": "My Bookings", "description": "Track, pay for or cancel your repair requests." },
-        "payments": { "label": "Payment History", "description": "Review receipts for jobs you have paid for." },
-        "profile": { "label": "Update Profile", "description": "Keep your contact details current." }
+        "browse": {
+          "label": "Browse Services",
+          "description": "Find a verified technician for your next repair."
+        },
+        "bookings": {
+          "label": "My Bookings",
+          "description": "Track, pay for or cancel your repair requests."
+        },
+        "payments": {
+          "label": "Payment History",
+          "description": "Review receipts for jobs you have paid for."
+        },
+        "profile": {
+          "label": "Update Profile",
+          "description": "Keep your contact details current."
+        }
       }
     },
     "technician": {
@@ -384,10 +427,22 @@
       "noJobs": "No repair requests yet.",
       "breakdownTitle": "Job Status Breakdown",
       "actions": {
-        "addService": { "label": "Add a Service", "description": "List a new repair service for customers to book." },
-        "myServices": { "label": "My Services", "description": "Edit, pause or delete your listed services." },
-        "requests": { "label": "Manage Requests", "description": "Accept, update and complete incoming jobs." },
-        "profile": { "label": "Update Profile", "description": "Keep your bio, area and photo current." }
+        "addService": {
+          "label": "Add a Service",
+          "description": "List a new repair service for customers to book."
+        },
+        "myServices": {
+          "label": "My Services",
+          "description": "Edit, pause or delete your listed services."
+        },
+        "requests": {
+          "label": "Manage Requests",
+          "description": "Accept, update and complete incoming jobs."
+        },
+        "profile": {
+          "label": "Update Profile",
+          "description": "Keep your bio, area and photo current."
+        }
       }
     },
     "admin": {
@@ -398,10 +453,22 @@
       "noBookings": "No bookings on the platform yet.",
       "breakdownTitle": "Platform Status Breakdown",
       "actions": {
-        "users": { "label": "Manage Users", "description": "Review accounts and change user roles." },
-        "services": { "label": "Service Approval", "description": "Approve or reject technician service listings." },
-        "bookings": { "label": "All Bookings", "description": "Monitor every repair job on the platform." },
-        "transactions": { "label": "Transactions", "description": "See every payment and total revenue." }
+        "users": {
+          "label": "Manage Users",
+          "description": "Review accounts and change user roles."
+        },
+        "services": {
+          "label": "Service Approval",
+          "description": "Approve or reject technician service listings."
+        },
+        "bookings": {
+          "label": "All Bookings",
+          "description": "Monitor every repair job on the platform."
+        },
+        "transactions": {
+          "label": "Transactions",
+          "description": "See every payment and total revenue."
+        }
       }
     }
   },
@@ -515,7 +582,11 @@
     "startWork": "Start Work",
     "markCompleted": "Mark Completed",
     "statusUpdated": "Booking status updated",
-    "updateError": "Could not update this booking"
+    "updateError": "Could not update this booking",
+    "rejectTitle": "Reject this request?",
+    "rejectText": "This will reject the repair request from {name}. This cannot be undone.",
+    "confirmReject": "Reject Request",
+    "keepRequest": "Keep Request"
   },
   "shiftLock": {
     "title": "Shift Locks",

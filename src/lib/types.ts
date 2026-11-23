@@ -42,6 +42,7 @@ export interface AppUser {
   bio?: string;
   unavailableDates?: string[];
   lockedShifts?: { date: string; shift: Shift }[];
+  createdAt?: string;
 }
 
 export interface Service {

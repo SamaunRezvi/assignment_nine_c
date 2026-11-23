@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { api } from '@/lib/api-client';
-import { useLabels } from '@/i18n/use-format';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import { useAuth } from '@/lib/auth-context';
 import type { AppUser, Role } from '@/lib/types';
 
@@ -30,6 +30,7 @@ export default function AdminUsersPage() {
   const t = useTranslations('adminUsers');
   const tCommon = useTranslations('common');
   const labels = useLabels();
+  const format = useFormat();
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,6 +75,7 @@ export default function AdminUsersPage() {
               <TableHead>{tCommon('columns.user')}</TableHead>
               <TableHead>{tCommon('columns.email')}</TableHead>
               <TableHead>{tCommon('columns.role')}</TableHead>
+              <TableHead>{tCommon('columns.joined')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,6 +107,7 @@ export default function AdminUsersPage() {
                     </SelectContent>
                   </Select>
                 </TableCell>
+                <TableCell>{u.createdAt ? format.date(u.createdAt) : '-'}</TableCell>
               </TableRow>
             ))}
           </TableBody>

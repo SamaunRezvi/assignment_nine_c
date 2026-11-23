@@ -30,6 +30,14 @@ import { RatingStars } from '@/components/shared/rating-stars';
 import { useLiveResource } from '@/lib/use-live-resource';
 import { api } from '@/lib/api-client';
 import { useFormat, useLabels } from '@/i18n/use-format';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import type { Booking, BookingStatus } from '@/lib/types';
 
 const STATUS_FILTERS = ['all', 'requested', 'accepted', 'reschedule-proposed', 'in-progress', 'completed'] as const;
@@ -44,6 +52,7 @@ export default function TechnicianRequestsPage() {
   const [detailTarget, setDetailTarget] = useState<Booking | null>(null);
   const [acceptTarget, setAcceptTarget] = useState<Booking | null>(null);
   const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<Booking | null>(null);
 
   const query = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
   const { data, loading, error, refresh: loadBookings } = useLiveResource<Booking[]>(`/api/bookings/technician${query}`);
@@ -70,7 +79,7 @@ export default function TechnicianRequestsPage() {
             <Button size="sm" variant="outline" onClick={() => setRescheduleTarget(booking)}>
               {t('reschedule')}
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => updateStatus(booking, 'rejected')}>
+            <Button size="sm" variant="destructive" onClick={() => setRejectTarget(booking)}>
               {tCommon('reject')}
             </Button>
           </div>
@@ -136,6 +145,7 @@ export default function TechnicianRequestsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>{tCommon('columns.service')}</TableHead>
                 <TableHead>{tCommon('columns.customer')}</TableHead>
                 <TableHead>{tCommon('columns.phone')}</TableHead>
                 <TableHead>{tCommon('columns.address')}</TableHead>
@@ -151,7 +161,8 @@ export default function TechnicianRequestsPage() {
             <TableBody>
               {bookings.map((booking) => (
                 <TableRow key={booking._id}>
-                  <TableCell className="font-medium">{booking.customerName}</TableCell>
+                  <TableCell className="max-w-48 truncate font-medium">{booking.serviceTitle}</TableCell>
+                  <TableCell>{booking.customerName}</TableCell>
                   <TableCell>{booking.customerPhone}</TableCell>
                   <TableCell className="max-w-40 truncate">{booking.address}</TableCell>
                   <TableCell>{format.date(booking.preferredDate)}</TableCell>
@@ -196,6 +207,29 @@ export default function TechnicianRequestsPage() {
       )}
 
       <BookingDetailDialog booking={detailTarget} viewerRole="technician" onOpenChange={(open) => !open && setDetailTarget(null)} />
+
+      <Dialog open={!!rejectTarget} onOpenChange={(open) => !open && setRejectTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('rejectTitle')}</DialogTitle>
+            <DialogDescription>{t('rejectText', { name: rejectTarget?.customerName ?? '' })}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectTarget(null)}>
+              {t('keepRequest')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (rejectTarget) void updateStatus(rejectTarget, 'rejected');
+                setRejectTarget(null);
+              }}
+            >
+              {t('confirmReject')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {acceptTarget && (
         <AcceptBookingDialog
