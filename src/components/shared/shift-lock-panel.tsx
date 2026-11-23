@@ -64,7 +64,7 @@ export function ShiftLockPanel() {
   }
 
   return (
-    <div className="space-y-4 rounded-lg border bg-card p-4">
+    <div className="space-y-4 overflow-hidden rounded-lg border bg-card p-4">
       <div>
         <h2 className="font-semibold">Shift Locks</h2>
         <p className="text-sm text-muted-foreground">

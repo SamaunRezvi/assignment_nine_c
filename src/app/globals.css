@@ -135,15 +135,19 @@
   body[data-scroll-locked] {
     overflow: clip !important;
   }
-  /* iOS Safari gives a date input an intrinsic logical width from its
-     internal segments and calendar glyph that ignores width:100% and
-     overflows the container by a few pixels. -webkit-min-logical-width
-     resets that intrinsic sizing so the border-box width actually wins. */
+  /* iOS Safari's calendar-picker-indicator button inside a date input adds
+     its own margin on top of the field's border-box width, so the input
+     renders a few pixels wider than its container no matter what width is
+     set on the input itself. Zeroing the icon's margin/padding removes that
+     extra width so the field actually stays inside its parent. */
   input[type='date'] {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    -webkit-min-logical-width: 0;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator {
+    margin: 0;
+    padding: 0;
   }
   input[type='date']::-webkit-date-and-time-value {
     text-align: left;
