@@ -112,7 +112,7 @@ export function RequestRepairDialog({ service }: { service: Service }) {
           Request Repair
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] overflow-y-auto">
         {submitted ? (
           <div className="space-y-4 py-4 text-center">
             <DialogTitle>Request Sent</DialogTitle>

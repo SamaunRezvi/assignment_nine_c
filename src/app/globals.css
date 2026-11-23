@@ -127,6 +127,14 @@
   html {
     @apply font-sans overflow-x-clip;
   }
+  /* Radix sets an inline overflow:hidden on body while a dropdown, dialog or
+     sheet is open to lock background scroll. That inline style overrides the
+     overflow-x-clip above, and any non-visible overflow on body breaks
+     position:sticky on iOS Safari, which hid the sticky navbar whenever a
+     menu was open. Force it back to clip on both axes while locked. */
+  body[data-scroll-locked] {
+    overflow: clip !important;
+  }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }

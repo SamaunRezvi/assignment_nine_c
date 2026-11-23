@@ -51,11 +51,11 @@ export default function TechnicianOverviewPage() {
       <QuickActions actions={QUICK_ACTIONS} />
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="min-w-0 space-y-3 lg:col-span-2">
-          <h2 className="truncate text-sm font-semibold text-muted-foreground">Recent Jobs</h2>
+          <h2 className="truncate px-1 text-sm font-semibold text-muted-foreground">Recent Jobs</h2>
           <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage="No repair requests yet." />
         </div>
         <div className="min-w-0 space-y-3">
-          <h2 className="truncate text-sm font-semibold text-muted-foreground">Job Status Breakdown</h2>
+          <h2 className="truncate px-1 text-sm font-semibold text-muted-foreground">Job Status Breakdown</h2>
           <Card className="min-w-0 p-4">
             <StatusBreakdownChart bookings={bookings} />
           </Card>
