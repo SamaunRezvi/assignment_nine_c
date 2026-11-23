@@ -36,7 +36,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthProvider>
           <NotificationProvider>
             {children}
-            <Toaster richColors position="top-right" />
+            {/* Start below the 64px sticky navbar so toasts never cover it. */}
+            <Toaster
+              richColors
+              position="top-right"
+              offset={{ top: 76, right: 16 }}
+              mobileOffset={{ top: 76, right: 16 }}
+            />
           </NotificationProvider>
         </AuthProvider>
       </body>

@@ -159,14 +159,13 @@
   @media (max-width: 600px) {
     [data-sonner-toaster] {
       left: auto !important;
-      width: auto !important;
-      max-width: calc(100% - 2rem);
+      right: var(--mobile-offset-right) !important;
+      width: min(280px, calc(100vw - 2rem)) !important;
     }
     [data-sonner-toaster] [data-sonner-toast] {
-      left: auto !important;
+      left: 0 !important;
       right: 0 !important;
-      width: 356px !important;
-      max-width: calc(100vw - 2rem);
+      width: 100% !important;
     }
   }
   h1, h2, h3, h4, h5, h6 {
