@@ -36,7 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthProvider>
           <NotificationProvider>
             {children}
-            <Toaster richColors position="top-center" />
+            <Toaster richColors position="top-right" />
           </NotificationProvider>
         </AuthProvider>
       </body>
