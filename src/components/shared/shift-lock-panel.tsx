@@ -72,9 +72,9 @@ export function ShiftLockPanel() {
         </p>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-        <div className="min-w-0 space-y-1.5 sm:flex-1">
+        <div className="w-full min-w-0 space-y-1.5 sm:flex-1">
           <Label htmlFor="lockDate">Date</Label>
-          <Input id="lockDate" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} className="w-full" />
+          <Input id="lockDate" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} className="block w-full" />
         </div>
         <div className="min-w-0 space-y-1.5 sm:flex-1">
           <Label htmlFor="lockShift">Shift</Label>
