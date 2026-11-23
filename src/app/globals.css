@@ -152,16 +152,20 @@
   input[type='date']::-webkit-date-and-time-value {
     text-align: left;
   }
-  /* Sonner stretches every toast to the full viewport width below 600px,
-     turning the top-right pill into a full-width banner on phones. Cap it
-     back to a right-aligned card so mobile matches the desktop look. */
+  /* Sonner's own mobile breakpoint sets left:0; right:0; width:100% on the
+     toaster and each toast below 600px, which overrides the top-right
+     position and stretches it into a full-width banner on phones. Pin it
+     back to the right edge only so mobile matches the desktop pill. */
   @media (max-width: 600px) {
     [data-sonner-toaster] {
-      width: auto;
+      left: auto !important;
+      width: auto !important;
       max-width: calc(100% - 2rem);
     }
     [data-sonner-toaster] [data-sonner-toast] {
-      width: 356px;
+      left: auto !important;
+      right: 0 !important;
+      width: 356px !important;
       max-width: calc(100vw - 2rem);
     }
   }
