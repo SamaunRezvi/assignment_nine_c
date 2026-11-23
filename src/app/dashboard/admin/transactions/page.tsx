@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { StatsCard } from '@/components/shared/stats-card';
 import { useLiveResource } from '@/lib/use-live-resource';
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import type { Payment } from '@/lib/types';
@@ -30,15 +30,7 @@ export default function AdminTransactionsPage() {
         <p className="text-muted-foreground">Every payment recorded through FixMate. Updates automatically.</p>
       </div>
 
-      <Card className="flex items-center gap-4 p-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <BadgeDollarSign className="h-6 w-6" />
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">Total Revenue</p>
-          <p className="text-2xl font-bold">{data ? formatCurrency(data.totalRevenue) : '...'}</p>
-        </div>
-      </Card>
+      <StatsCard label="Total Revenue" value={data ? formatCurrency(data.totalRevenue) : '...'} icon={BadgeDollarSign} />
 
       {error && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border p-4 text-sm">
         <p>Could not load the latest transactions. {data ? 'Showing the last available update.' : 'Please try again.'}</p>

@@ -37,7 +37,7 @@ export function BookingDetailDialog({ booking, viewerRole, onOpenChange }: Booki
               <Image src={booking.serviceImage} alt={booking.serviceTitle} fill className="object-cover" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <div>
                 <p className="text-muted-foreground">Status</p>
                 <BookingStatusBadge status={booking.status} />

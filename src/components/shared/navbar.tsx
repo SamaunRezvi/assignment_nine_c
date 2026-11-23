@@ -83,7 +83,7 @@ export function Navbar() {
                     </Avatar>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 max-w-[calc(100vw-2rem)]">
                   <DropdownMenuLabel className="flex flex-col gap-1">
                     <span className="font-semibold">{user.name}</span>
                     <Badge variant="secondary" className="w-fit text-xs">

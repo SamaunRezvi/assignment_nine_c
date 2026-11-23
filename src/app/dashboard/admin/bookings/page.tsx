@@ -65,15 +65,15 @@ export default function AdminBookingsPage() {
           <h1 className="text-2xl font-bold tracking-tight">All Bookings</h1>
           <p className="text-muted-foreground">Every repair request across the platform.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Input
             placeholder="Search customer, technician or service"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64"
+            className="w-full sm:w-64"
           />
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
