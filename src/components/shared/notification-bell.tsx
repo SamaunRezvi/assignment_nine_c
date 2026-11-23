@@ -15,7 +15,7 @@ export function NotificationBell() {
   const { snapshot, status, busy, error, setEnabled, markAllRead } = notifications;
   const unread = snapshot?.unreadCount ?? 0;
   return (
-    <Popover>
+    <Popover onOpenChange={(open) => { if (open && unread > 0) void markAllRead(); }}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative shrink-0" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}>
           {snapshot?.enabled === false ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
