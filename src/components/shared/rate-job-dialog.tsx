@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { api } from '@/lib/api-client';
 import type { Booking } from '@/lib/types';
+import { useErrorText } from '@/i18n/errors';
 
 export function RateJobDialog({
   booking,
@@ -28,6 +30,9 @@ export function RateJobDialog({
   onOpenChange: (open: boolean) => void;
   onRated: () => void;
 }) {
+  const t = useTranslations('rateDialog');
+  const tCommon = useTranslations('common');
+  const errorText = useErrorText();
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [review, setReview] = useState('');
@@ -37,23 +42,23 @@ export function RateJobDialog({
     e.preventDefault();
 
     if (rating === 0) {
-      toast.error('Please select a star rating');
+      toast.error(t('needRating'));
       return;
     }
 
     if (review.trim().length === 0) {
-      toast.error('Please write a short review');
+      toast.error(t('needReview'));
       return;
     }
 
     setSubmitting(true);
     try {
       await api.patch(`/api/bookings/${booking._id}/rating`, { rating, review: review.trim() });
-      toast.success('Thank you for your feedback');
+      toast.success(t('success'));
       onOpenChange(false);
       onRated();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not submit your rating');
+      toast.error(errorText(error, t('error')));
     } finally {
       setSubmitting(false);
     }
@@ -63,18 +68,18 @@ export function RateJobDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Rate this job</DialogTitle>
-          <DialogDescription>Share your experience with {booking.technicianName} for {booking.serviceTitle}.</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description', { technician: booking.technicianName, service: booking.serviceTitle })}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label>Your rating</Label>
+            <Label>{t('yourRating')}</Label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
-                  aria-label={`Rate ${star} ${star === 1 ? 'star' : 'stars'}`}
+                  aria-label={t('starAria', { count: star })}
                   aria-pressed={rating === star}
                   disabled={submitting}
                   onClick={() => setRating(star)}
@@ -92,19 +97,19 @@ export function RateJobDialog({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="review">Your review</Label>
+            <Label htmlFor="review">{t('yourReview')}</Label>
             <Textarea
               id="review"
               required
               rows={4}
               value={review}
               onChange={(e) => setReview(e.target.value)}
-              placeholder="How was the technician's work?"
+              placeholder={t('placeholder')}
             />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Submitting...' : 'Submit Rating'}
+              {submitting ? tCommon('submitting') : t('submit')}
             </Button>
           </DialogFooter>
         </form>

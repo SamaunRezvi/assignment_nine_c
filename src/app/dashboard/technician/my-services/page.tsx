@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { PackagePlus } from 'lucide-react';
 import {
   Table,
@@ -26,10 +27,14 @@ import {
 import { ApprovalBadge } from '@/components/shared/approval-badge';
 import { EditServiceDialog } from '@/components/shared/edit-service-dialog';
 import { api } from '@/lib/api-client';
-import { formatCurrency } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { Service } from '@/lib/types';
 
 export default function MyServicesPage() {
+  const t = useTranslations('myServices');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const format = useFormat();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<Service | null>(null);
@@ -52,9 +57,9 @@ export default function MyServicesPage() {
     try {
       await api.patch(`/api/services/${service._id}/availability`, { isAvailable });
       setServices((prev) => prev.map((s) => (s._id === service._id ? { ...s, isAvailable } : s)));
-      toast.success(isAvailable ? 'Service is now available' : 'Service is now hidden');
+      toast.success(isAvailable ? t('nowAvailable') : t('nowHidden'));
     } catch {
-      toast.error('Could not update availability');
+      toast.error(t('availabilityError'));
     }
   }
 
@@ -62,23 +67,23 @@ export default function MyServicesPage() {
     if (!deleteTarget) return;
     try {
       await api.delete(`/api/services/${deleteTarget._id}`);
-      toast.success('Service deleted');
+      toast.success(t('deleted'));
       setDeleteTarget(null);
       loadServices();
     } catch {
-      toast.error('Could not delete the service');
+      toast.error(t('deleteError'));
     }
   }
 
-  if (loading) return <p className="text-muted-foreground">Loading your services...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('loading')}</p>;
 
   if (services.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-16 text-center">
         <PackagePlus className="h-10 w-10 text-muted-foreground" />
-        <p className="font-medium">You have not added any services yet</p>
+        <p className="font-medium">{t('empty')}</p>
         <Button asChild>
-          <Link href="/dashboard/technician/add-service">Add Your First Service</Link>
+          <Link href="/dashboard/technician/add-service">{t('addFirst')}</Link>
         </Button>
       </div>
     );
@@ -88,11 +93,11 @@ export default function MyServicesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Services</h1>
-          <p className="text-muted-foreground">Manage the services you offer on FixMate.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/technician/add-service">Add Service</Link>
+          <Link href="/dashboard/technician/add-service">{t('add')}</Link>
         </Button>
       </div>
 
@@ -100,12 +105,12 @@ export default function MyServicesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Service</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Approval</TableHead>
-              <TableHead>Available</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>{tCommon('columns.service')}</TableHead>
+              <TableHead>{tCommon('columns.category')}</TableHead>
+              <TableHead>{tCommon('columns.price')}</TableHead>
+              <TableHead>{tCommon('columns.approval')}</TableHead>
+              <TableHead>{tCommon('columns.available')}</TableHead>
+              <TableHead className="text-right">{tCommon('columns.action')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -117,8 +122,8 @@ export default function MyServicesPage() {
                   </div>
                   <span className="font-medium">{service.title}</span>
                 </TableCell>
-                <TableCell>{service.category}</TableCell>
-                <TableCell>{formatCurrency(service.basePrice)}</TableCell>
+                <TableCell>{labels.category(service.category)}</TableCell>
+                <TableCell>{format.currency(service.basePrice)}</TableCell>
                 <TableCell>
                   <ApprovalBadge status={service.approvalStatus} />
                 </TableCell>
@@ -131,10 +136,10 @@ export default function MyServicesPage() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" size="sm" onClick={() => setEditTarget(service)}>
-                      Edit
+                      {tCommon('edit')}
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => setDeleteTarget(service)}>
-                      Delete
+                      {tCommon('delete')}
                     </Button>
                   </div>
                 </TableCell>
@@ -156,17 +161,17 @@ export default function MyServicesPage() {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete this service?</DialogTitle>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
             <DialogDescription>
-              {deleteTarget?.title} will be removed permanently. This cannot be undone.
+              {t('deleteText', { title: deleteTarget?.title ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              Keep Service
+              {t('keep')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete Service
+              {t('confirmDelete')}
             </Button>
           </DialogFooter>
         </DialogContent>

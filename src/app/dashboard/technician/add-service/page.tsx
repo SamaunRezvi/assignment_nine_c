@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,10 +20,16 @@ import {
 import { api } from '@/lib/api-client';
 import { uploadToImgBB } from '@/lib/imgbb';
 import { CATEGORIES } from '@/lib/types';
+import { useLabels } from '@/i18n/use-format';
+import { useErrorText } from '@/i18n/errors';
 
 const SERVICE_MODES = ['Home Visit', 'Shop Drop-off'] as const;
 
 export default function AddServicePage() {
+  const t = useTranslations('serviceForm');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const errorText = useErrorText();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -38,17 +45,17 @@ export default function AddServicePage() {
     e.preventDefault();
 
     if (!category || !serviceMode) {
-      toast.error('Please select a category and service mode');
+      toast.error(t('selectBoth'));
       return;
     }
 
     if (!image) {
-      toast.error('Please upload a service image');
+      toast.error(t('needImage'));
       return;
     }
 
     if (Number(basePrice) <= 0) {
-      toast.error('Base price must be a positive number');
+      toast.error(t('pricePositive'));
       return;
     }
 
@@ -67,10 +74,10 @@ export default function AddServicePage() {
         serviceArea,
       });
 
-      toast.success('Service submitted and is waiting for admin approval');
+      toast.success(t('added'));
       router.push('/dashboard/technician/my-services');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not add the service. Please try again.');
+      toast.error(errorText(error, t('addError')));
     } finally {
       setSubmitting(false);
     }
@@ -79,43 +86,43 @@ export default function AddServicePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Add a Service</h1>
-        <p className="text-muted-foreground">New services wait for admin approval before going live.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('addTitle')}</h1>
+        <p className="text-muted-foreground">{t('addSubtitle')}</p>
       </div>
 
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t('title')}</Label>
             <Input id="title" required value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Category</Label>
+              <Label>{t('category')}</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t('selectCategory')} />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c}
+                      {labels.category(c)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Service Mode</Label>
+              <Label>{t('serviceMode')}</Label>
               <Select value={serviceMode} onValueChange={setServiceMode}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select mode" />
+                  <SelectValue placeholder={t('selectMode')} />
                 </SelectTrigger>
                 <SelectContent>
                   {SERVICE_MODES.map((m) => (
                     <SelectItem key={m} value={m}>
-                      {m}
+                      {labels.serviceMode(m)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -124,7 +131,7 @@ export default function AddServicePage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('description')}</Label>
             <Textarea
               id="description"
               required
@@ -136,7 +143,7 @@ export default function AddServicePage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="basePrice">Base Price (USD)</Label>
+              <Label htmlFor="basePrice">{t('basePrice')}</Label>
               <Input
                 id="basePrice"
                 type="number"
@@ -147,10 +154,10 @@ export default function AddServicePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="estimatedDuration">Estimated Duration</Label>
+              <Label htmlFor="estimatedDuration">{t('estimatedDuration')}</Label>
               <Input
                 id="estimatedDuration"
-                placeholder="e.g. 2-3 hours"
+                placeholder={t('durationPlaceholder')}
                 required
                 value={estimatedDuration}
                 onChange={(e) => setEstimatedDuration(e.target.value)}
@@ -159,10 +166,10 @@ export default function AddServicePage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="serviceArea">Service Area</Label>
+            <Label htmlFor="serviceArea">{t('serviceArea')}</Label>
             <Input
               id="serviceArea"
-              placeholder="e.g. Dhanmondi, Dhaka"
+              placeholder={t('areaPlaceholder')}
               required
               value={serviceArea}
               onChange={(e) => setServiceArea(e.target.value)}
@@ -171,16 +178,16 @@ export default function AddServicePage() {
 
           <ImageUpload
             id="image"
-            label="Service Image"
+            label={t('image')}
             value={image}
             onChange={setImage}
-            alt="New service image preview"
+            alt={t('imageAlt')}
             disabled={submitting}
             required
           />
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Add Service'}
+            {submitting ? tCommon('submitting') : t('submit')}
           </Button>
         </form>
       </Card>

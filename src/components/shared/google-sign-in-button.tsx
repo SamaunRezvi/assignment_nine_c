@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 
@@ -8,6 +9,8 @@ interface GoogleSignInButtonProps {
 }
 
 export function GoogleSignInButton({ callbackURL }: GoogleSignInButtonProps) {
+  const t = useTranslations('auth');
+
   async function handleClick() {
     await authClient.signIn.social({ provider: 'google', callbackURL });
   }
@@ -32,7 +35,7 @@ export function GoogleSignInButton({ callbackURL }: GoogleSignInButtonProps) {
           d="M12 4.77c1.76 0 3.34.61 4.58 1.8l3.44-3.44C17.94 1.19 15.24 0 12 0 7.33 0 3.28 2.7 1.3 6.59l4 3.11C6.24 6.87 8.88 4.77 12 4.77z"
         />
       </svg>
-      Continue with Google
+      {t('continueWithGoogle')}
     </Button>
   );
 }

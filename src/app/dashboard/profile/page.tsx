@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +13,8 @@ import { AvailabilityManager } from '@/components/shared/availability-manager';
 import { api } from '@/lib/api-client';
 import { uploadToImgBB } from '@/lib/imgbb';
 import { useAuth } from '@/lib/auth-context';
-import { ROLE_LABEL } from '@/lib/helpers';
+import { useLabels } from '@/i18n/use-format';
+import { useErrorText } from '@/i18n/errors';
 import type { AppUser } from '@/lib/types';
 
 export default function ProfilePage() {
@@ -24,6 +26,11 @@ export default function ProfilePage() {
 }
 
 function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => Promise<void> }) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
+  const labels = useLabels();
+  const errorText = useErrorText();
   const [name, setName] = useState(user.name ?? '');
   const [phone, setPhone] = useState(user.phone ?? '');
   const [area, setArea] = useState(user.area ?? '');
@@ -48,9 +55,9 @@ function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => 
 
       await refreshUser();
       setImage(null);
-      toast.success('Profile updated successfully');
+      toast.success(t('updated'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not update your profile');
+      toast.error(errorText(error, t('error')));
     } finally {
       setSubmitting(false);
     }
@@ -59,15 +66,15 @@ function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Update Profile</h1>
-        <p className="text-muted-foreground">Keep your contact information up to date.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <ImageUpload
             id="profile-image"
-            label="Profile Photo"
+            label={t('photo')}
             value={image}
             onChange={setImage}
             currentImage={user.image}
@@ -78,44 +85,44 @@ function ProfileForm({ user, refreshUser }: { user: AppUser; refreshUser: () => 
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Email</Label>
+              <Label>{tAuth('email')}</Label>
               <Input value={user.email} readOnly disabled />
             </div>
             <div className="space-y-1.5">
-              <Label>Role</Label>
-              <Input value={ROLE_LABEL[user.role]} readOnly disabled />
+              <Label>{tCommon('columns.role')}</Label>
+              <Input value={labels.role(user.role)} readOnly disabled />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('name')}</Label>
             <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{tCommon('columns.phone')}</Label>
               <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="area">Area</Label>
+              <Label htmlFor="area">{t('area')}</Label>
               <Input id="area" value={area} onChange={(e) => setArea(e.target.value)} />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio">{t('bio')}</Label>
             <Textarea
               id="bio"
               rows={4}
-              placeholder="Share a little about your experience"
+              placeholder={t('bioPlaceholder')}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? 'Saving...' : 'Save Changes'}
+            {submitting ? tCommon('saving') : tCommon('saveChanges')}
           </Button>
         </form>
       </Card>

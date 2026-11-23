@@ -1,21 +1,5 @@
-import type { BookingStatus, PaymentStatus, Role, Shift } from './types';
-
-export const SHIFT_LABEL: Record<Shift, string> = {
-  morning: 'Morning (8 AM - 12 PM)',
-  noon: 'Noon (12 PM - 4 PM)',
-  evening: 'Evening (4 PM - 8 PM)',
-  night: 'Night (8 PM - 11 PM)',
-};
-
-export const STATUS_LABEL: Record<BookingStatus, string> = {
-  requested: 'Requested',
-  accepted: 'Accepted',
-  'in-progress': 'In Progress',
-  completed: 'Completed',
-  rejected: 'Rejected',
-  cancelled: 'Cancelled',
-  'reschedule-proposed': 'Reschedule Proposed',
-};
+import { INTL_LOCALE, isLocale } from '@/i18n/config';
+import type { BookingStatus, PaymentStatus, Role } from './types';
 
 export const STATUS_BADGE_CLASS: Record<BookingStatus, string> = {
   requested: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -32,24 +16,26 @@ export const PAYMENT_BADGE_CLASS: Record<PaymentStatus, string> = {
   paid: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
 
-export const ROLE_LABEL: Record<Role, string> = {
-  customer: 'Customer',
-  technician: 'Technician',
-  admin: 'Admin',
-};
-
 export function dashboardPathForRole(role: Role) {
   return `/dashboard/${role}`;
 }
 
-export function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+function intlLocale(locale: string) {
+  return isLocale(locale) ? INTL_LOCALE[locale] : INTL_LOCALE.en;
 }
 
-export function formatDate(value: string | Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(value));
+export function formatCurrency(amount: number, locale = 'en') {
+  return new Intl.NumberFormat(intlLocale(locale), { style: 'currency', currency: 'USD' }).format(amount);
 }
 
-export function formatDateTime(value: string | Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+export function formatNumber(value: number, locale = 'en', options?: Intl.NumberFormatOptions) {
+  return new Intl.NumberFormat(intlLocale(locale), options).format(value);
+}
+
+export function formatDate(value: string | Date, locale = 'en') {
+  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium' }).format(new Date(value));
+}
+
+export function formatDateTime(value: string | Date, locale = 'en') {
+  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 }

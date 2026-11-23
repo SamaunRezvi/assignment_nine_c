@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Table,
   TableBody,
@@ -19,13 +20,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { api } from '@/lib/api-client';
-import { ROLE_LABEL } from '@/lib/helpers';
+import { useLabels } from '@/i18n/use-format';
 import { useAuth } from '@/lib/auth-context';
 import type { AppUser, Role } from '@/lib/types';
 
 const ROLES: Role[] = ['customer', 'technician', 'admin'];
 
 export default function AdminUsersPage() {
+  const t = useTranslations('adminUsers');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,29 +51,29 @@ export default function AdminUsersPage() {
   async function handleRoleChange(targetUser: AppUser, role: Role) {
     try {
       await api.patch(`/api/admin/users/${targetUser._id}/role`, { role });
-      toast.success(`${targetUser.name}'s role updated to ${role}`);
+      toast.success(t('roleUpdated', { name: targetUser.name, role: labels.role(role) }));
       loadUsers();
     } catch {
-      toast.error('Could not update this user\'s role');
+      toast.error(t('error'));
     }
   }
 
-  if (loading) return <p className="text-muted-foreground">Loading users...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('loading')}</p>;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Manage Users</h1>
-        <p className="text-muted-foreground">Every account registered on FixMate.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>{tCommon('columns.user')}</TableHead>
+              <TableHead>{tCommon('columns.email')}</TableHead>
+              <TableHead>{tCommon('columns.role')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,7 +99,7 @@ export default function AdminUsersPage() {
                     <SelectContent>
                       {ROLES.map((role) => (
                         <SelectItem key={role} value={role}>
-                          {ROLE_LABEL[role]}
+                          {labels.role(role)}
                         </SelectItem>
                       ))}
                     </SelectContent>

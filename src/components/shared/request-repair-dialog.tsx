@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -19,8 +20,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api, ApiError } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
 import { SHIFTS, type Service, type Shift } from '@/lib/types';
+import { useLabels } from '@/i18n/use-format';
+import { useErrorText } from '@/i18n/errors';
 
 export function RequestRepairDialog({ service }: { service: Service }) {
+  const t = useTranslations('requestDialog');
+  const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
+  const labels = useLabels();
+  const errorText = useErrorText();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -63,22 +71,22 @@ export function RequestRepairDialog({ service }: { service: Service }) {
     setShiftError('');
 
     if (unavailableDates.includes(preferredDate)) {
-      setDateError('The technician is not available on this date. Please choose another date.');
+      setDateError(t('dateUnavailable'));
       return;
     }
 
     if (!shift) {
-      setShiftError('Please select a shift');
+      setShiftError(t('needShift'));
       return;
     }
 
     if (isShiftLocked(preferredDate, shift)) {
-      setShiftError('This shift is fully booked. Please choose another shift or date.');
+      setShiftError(t('shiftLocked'));
       return;
     }
 
     if (problemDescription.trim().length < 20) {
-      setError('Problem description must be at least 20 characters');
+      setError(t('minDescription'));
       return;
     }
 
@@ -92,13 +100,13 @@ export function RequestRepairDialog({ service }: { service: Service }) {
         shift,
         problemDescription,
       });
-      toast.success('Repair request sent successfully');
+      toast.success(t('success'));
       setSubmitted(true);
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        toast.error(err.message || 'You already have an active request for this service');
+        toast.error(errorText(err, t('activeRequest')));
       } else {
-        toast.error('Could not send the request. Please try again.');
+        toast.error(errorText(err, t('error')));
       }
     } finally {
       setSubmitting(false);
@@ -109,47 +117,46 @@ export function RequestRepairDialog({ service }: { service: Service }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="lg" className="w-full sm:w-auto">
-          Request Repair
+          {t('button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-y-auto">
         {submitted ? (
           <div className="space-y-4 py-4 text-center">
-            <DialogTitle>Request Sent</DialogTitle>
+            <DialogTitle>{t('sentTitle')}</DialogTitle>
             <p className="text-muted-foreground">
-              Your repair request has been sent to {service.technicianName}. You can track its status
-              from your bookings.
+              {t('sentText', { name: service.technicianName })}
             </p>
             <Button asChild>
-              <Link href="/dashboard/customer/bookings">Go to My Bookings</Link>
+              <Link href="/dashboard/customer/bookings">{t('goToBookings')}</Link>
             </Button>
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Request Repair for {service.title}</DialogTitle>
+              <DialogTitle>{t('title', { service: service.title })}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Name</Label>
+                  <Label>{t('name')}</Label>
                   <Input value={user?.name ?? ''} readOnly disabled />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Email</Label>
+                  <Label>{tAuth('email')}</Label>
                   <Input value={user?.email ?? ''} readOnly disabled />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">{t('phone')}</Label>
                 <Input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">{t('address')}</Label>
                 <Input id="address" required value={address} onChange={(e) => setAddress(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="preferredDate">Preferred Date</Label>
+                <Label htmlFor="preferredDate">{t('preferredDate')}</Label>
                 <Input
                   id="preferredDate"
                   type="date"
@@ -158,38 +165,33 @@ export function RequestRepairDialog({ service }: { service: Service }) {
                   value={preferredDate}
                   onChange={(e) => {
                     setPreferredDate(e.target.value);
-                    setDateError(unavailableDates.includes(e.target.value) ? 'The technician is not available on this date. Please choose another date.' : '');
+                    setDateError(unavailableDates.includes(e.target.value) ? t('dateUnavailable') : '');
                     setShiftError(
-                      isShiftLocked(e.target.value, shift)
-                        ? 'This shift is fully booked. Please choose another shift or date.'
-                        : ''
+                      isShiftLocked(e.target.value, shift) ? t('shiftLocked') : ''
                     );
                   }}
                 />
                 {dateError && <p className="text-sm text-destructive">{dateError}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="shift">Preferred Shift</Label>
+                <Label htmlFor="shift">{t('preferredShift')}</Label>
                 <Select
                   required
                   value={shift}
                   onValueChange={(value) => {
                     setShift(value as Shift);
                     setShiftError(
-                      isShiftLocked(preferredDate, value as Shift)
-                        ? 'This shift is fully booked. Please choose another shift or date.'
-                        : ''
+                      isShiftLocked(preferredDate, value as Shift) ? t('shiftLocked') : ''
                     );
                   }}
                 >
                   <SelectTrigger id="shift" className="w-full">
-                    <SelectValue placeholder="Select a shift" />
+                    <SelectValue placeholder={t('selectShift')} />
                   </SelectTrigger>
                   <SelectContent>
                     {SHIFTS.map((s) => (
-                      <SelectItem key={s.value} value={s.value} disabled={isShiftLocked(preferredDate, s.value)}>
-                        {s.label}
-                        {isShiftLocked(preferredDate, s.value) ? ' (fully booked)' : ''}
+                      <SelectItem key={s} value={s} disabled={isShiftLocked(preferredDate, s)}>
+                        {isShiftLocked(preferredDate, s) ? t('fullyBooked', { shift: labels.shift(s) }) : labels.shift(s)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -197,12 +199,12 @@ export function RequestRepairDialog({ service }: { service: Service }) {
                 {shiftError && <p className="text-sm text-destructive">{shiftError}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="problemDescription">Problem Description</Label>
+                <Label htmlFor="problemDescription">{t('problemDescription')}</Label>
                 <Textarea
                   id="problemDescription"
                   required
                   rows={4}
-                  placeholder="Describe what is wrong with your device (at least 20 characters)"
+                  placeholder={t('problemPlaceholder')}
                   value={problemDescription}
                   onChange={(e) => setProblemDescription(e.target.value)}
                 />
@@ -210,7 +212,7 @@ export function RequestRepairDialog({ service }: { service: Service }) {
               </div>
               <DialogFooter>
                 <Button type="submit" disabled={submitting} className="w-full">
-                  {submitting ? 'Sending...' : 'Send Request'}
+                  {submitting ? tCommon('sending') : t('submit')}
                 </Button>
               </DialogFooter>
             </form>

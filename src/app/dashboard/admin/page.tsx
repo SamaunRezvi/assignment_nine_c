@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Users, Wrench, Hourglass, ShieldCheck, ClipboardList, Receipt } from 'lucide-react';
 import { StatsCard } from '@/components/shared/stats-card';
 import { QuickActions } from '@/components/shared/quick-actions';
@@ -12,11 +13,11 @@ import { api } from '@/lib/api-client';
 import type { Booking } from '@/lib/types';
 
 const QUICK_ACTIONS = [
-  { label: 'Manage Users', description: 'Review accounts and change user roles.', href: '/dashboard/admin/users', icon: Users },
-  { label: 'Service Approval', description: 'Approve or reject technician service listings.', href: '/dashboard/admin/services', icon: ShieldCheck },
-  { label: 'All Bookings', description: 'Monitor every repair job on the platform.', href: '/dashboard/admin/bookings', icon: ClipboardList },
-  { label: 'Transactions', description: 'See every payment and total revenue.', href: '/dashboard/admin/transactions', icon: Receipt },
-];
+  { key: 'users', href: '/dashboard/admin/users', icon: Users },
+  { key: 'services', href: '/dashboard/admin/services', icon: ShieldCheck },
+  { key: 'bookings', href: '/dashboard/admin/bookings', icon: ClipboardList },
+  { key: 'transactions', href: '/dashboard/admin/transactions', icon: Receipt },
+] as const;
 
 interface AdminStats {
   totalUsers: number;
@@ -25,6 +26,7 @@ interface AdminStats {
 }
 
 export default function AdminOverviewPage() {
+  const t = useTranslations('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
@@ -33,26 +35,32 @@ export default function AdminOverviewPage() {
     api.get<Booking[]>('/api/admin/bookings').then(setBookings).catch(() => setBookings([]));
   }, []);
 
+  const actions = QUICK_ACTIONS.map((action) => ({
+    ...action,
+    label: t(`admin.actions.${action.key}.label`),
+    description: t(`admin.actions.${action.key}.description`),
+  }));
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
-        <p className="text-muted-foreground">Platform wide activity at a glance.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('overview')}</h1>
+        <p className="text-muted-foreground">{t('admin.subtitle')}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatsCard label="Total Users" value={stats?.totalUsers ?? '-'} icon={Users} />
-        <StatsCard label="Total Technicians" value={stats?.totalTechnicians ?? '-'} icon={Wrench} />
-        <StatsCard label="Pending Services" value={stats?.pendingServices ?? '-'} icon={Hourglass} />
+        <StatsCard label={t('admin.totalUsers')} value={stats?.totalUsers ?? '-'} icon={Users} />
+        <StatsCard label={t('admin.totalTechnicians')} value={stats?.totalTechnicians ?? '-'} icon={Wrench} />
+        <StatsCard label={t('admin.pendingServices')} value={stats?.pendingServices ?? '-'} icon={Hourglass} />
       </div>
-      <QuickActions actions={QUICK_ACTIONS} />
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-3 lg:col-span-2">
-          <h2 className="text-sm font-semibold text-muted-foreground">Recent Bookings</h2>
-          <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage="No bookings on the platform yet." />
+      <QuickActions actions={actions} />
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-4">
+        <div className="min-w-0 space-y-3 lg:col-span-2">
+          <h2 className="truncate px-1 text-sm font-semibold text-muted-foreground">{t('recentBookings')}</h2>
+          <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage={t('admin.noBookings')} />
         </div>
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground">Platform Status Breakdown</h2>
-          <Card className="p-4">
+        <div className="min-w-0 space-y-3">
+          <h2 className="truncate px-1 text-sm font-semibold text-muted-foreground">{t('admin.breakdownTitle')}</h2>
+          <Card className="min-w-0 p-4">
             <StatusBreakdownChart bookings={bookings} />
           </Card>
         </div>

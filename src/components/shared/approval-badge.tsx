@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { useLabels } from '@/i18n/use-format';
 import type { ApprovalStatus } from '@/lib/types';
 
 const CLASS_MAP: Record<ApprovalStatus, string> = {
@@ -7,16 +8,11 @@ const CLASS_MAP: Record<ApprovalStatus, string> = {
   rejected: 'bg-red-100 text-red-700 border-red-200',
 };
 
-const LABEL_MAP: Record<ApprovalStatus, string> = {
-  pending: 'Pending',
-  approved: 'Approved',
-  rejected: 'Rejected',
-};
-
 export function ApprovalBadge({ status }: { status: ApprovalStatus }) {
+  const labels = useLabels();
   return (
     <Badge variant="outline" className={CLASS_MAP[status]}>
-      {LABEL_MAP[status]}
+      {labels.approval(status)}
     </Badge>
   );
 }

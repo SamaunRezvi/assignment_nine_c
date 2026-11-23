@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import {
   Table,
@@ -21,17 +22,16 @@ import {
 } from '@/components/ui/select';
 import { ApprovalBadge } from '@/components/shared/approval-badge';
 import { api } from '@/lib/api-client';
-import { formatCurrency } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { ApprovalStatus, Service } from '@/lib/types';
 
-const FILTERS: { value: string; label: string }[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'approved', label: 'Approved' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'all', label: 'All' },
-];
+const FILTERS = ['pending', 'approved', 'rejected', 'all'] as const;
 
 export default function AdminServicesPage() {
+  const t = useTranslations('adminServices');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const format = useFormat();
   const [services, setServices] = useState<Service[]>([]);
   const [filter, setFilter] = useState('pending');
   const [loading, setLoading] = useState(true);
@@ -55,10 +55,10 @@ export default function AdminServicesPage() {
   async function handleApproval(service: Service, approvalStatus: ApprovalStatus) {
     try {
       await api.patch(`/api/admin/services/${service._id}/approval`, { approvalStatus });
-      toast.success(`${service.title} ${approvalStatus}`);
+      toast.success(approvalStatus === 'approved' ? t('approved', { title: service.title }) : t('rejected', { title: service.title }));
       loadServices();
     } catch {
-      toast.error('Could not update this service');
+      toast.error(t('error'));
     }
   }
 
@@ -66,8 +66,8 @@ export default function AdminServicesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Service Approval</h1>
-          <p className="text-muted-foreground">Review services submitted by technicians.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-40">
@@ -75,8 +75,8 @@ export default function AdminServicesPage() {
           </SelectTrigger>
           <SelectContent>
             {FILTERS.map((f) => (
-              <SelectItem key={f.value} value={f.value}>
-                {f.label}
+              <SelectItem key={f} value={f}>
+                {f === 'all' ? tCommon('all') : labels.approval(f)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -84,21 +84,21 @@ export default function AdminServicesPage() {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading services...</p>
+        <p className="text-muted-foreground">{t('loading')}</p>
       ) : services.length === 0 ? (
         <div className="rounded-lg border border-dashed p-16 text-center text-muted-foreground">
-          No services in this filter.
+          {t('empty')}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Service</TableHead>
-                <TableHead>Technician</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>{tCommon('columns.service')}</TableHead>
+                <TableHead>{tCommon('columns.technician')}</TableHead>
+                <TableHead>{tCommon('columns.price')}</TableHead>
+                <TableHead>{tCommon('columns.status')}</TableHead>
+                <TableHead className="text-right">{tCommon('columns.action')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,19 +111,19 @@ export default function AdminServicesPage() {
                     <span className="font-medium">{service.title}</span>
                   </TableCell>
                   <TableCell>{service.technicianName}</TableCell>
-                  <TableCell>{formatCurrency(service.basePrice)}</TableCell>
+                  <TableCell>{format.currency(service.basePrice)}</TableCell>
                   <TableCell>
                     <ApprovalBadge status={service.approvalStatus} />
                   </TableCell>
                   <TableCell className="text-right">
                     {service.approvalStatus !== 'approved' && (
                       <Button size="sm" className="mr-2" onClick={() => handleApproval(service, 'approved')}>
-                        Approve
+                        {tCommon('approve')}
                       </Button>
                     )}
                     {service.approvalStatus !== 'rejected' && (
                       <Button size="sm" variant="destructive" onClick={() => handleApproval(service, 'rejected')}>
-                        Reject
+                        {tCommon('reject')}
                       </Button>
                     )}
                   </TableCell>

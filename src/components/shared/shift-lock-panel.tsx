@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Lock, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { api } from '@/lib/api-client';
 import { SHIFTS, type Shift } from '@/lib/types';
+import { useFormat, useLabels } from '@/i18n/use-format';
 
 interface LockedShift {
   date: string;
@@ -16,6 +18,9 @@ interface LockedShift {
 }
 
 export function ShiftLockPanel() {
+  const t = useTranslations('shiftLock');
+  const labels = useLabels();
+  const format = useFormat();
   const [lockedShifts, setLockedShifts] = useState<LockedShift[]>([]);
   const [date, setDate] = useState('');
   const [shift, setShift] = useState<Shift | ''>('');
@@ -45,9 +50,9 @@ export function ShiftLockPanel() {
         action,
       });
       setLockedShifts(data.lockedShifts ?? []);
-      toast.success(action === 'lock' ? 'Shift locked' : 'Shift unlocked');
+      toast.success(action === 'lock' ? t('locked') : t('unlocked'));
     } catch {
-      toast.error('Could not update the shift lock');
+      toast.error(t('error'));
     } finally {
       setBusy(false);
     }
@@ -55,7 +60,7 @@ export function ShiftLockPanel() {
 
   function handleLock() {
     if (!date || !shift) {
-      toast.error('Select a date and shift to lock');
+      toast.error(t('selectBoth'));
       return;
     }
     void toggleLock({ date, shift }, 'lock');
@@ -66,47 +71,46 @@ export function ShiftLockPanel() {
   return (
     <div className="space-y-4 overflow-hidden rounded-lg border bg-card p-4">
       <div>
-        <h2 className="font-semibold">Shift Locks</h2>
+        <h2 className="font-semibold">{t('title')}</h2>
         <p className="text-sm text-muted-foreground">
-          Lock a date and shift once you&apos;re done assigning time slots for it. New requests for that shift will stop.
+          {t('description')}
         </p>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
         <div className="w-full min-w-0 space-y-1.5 sm:flex-1">
-          <Label htmlFor="lockDate">Date</Label>
+          <Label htmlFor="lockDate">{t('date')}</Label>
           <Input id="lockDate" type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} className="block w-full" />
         </div>
         <div className="min-w-0 space-y-1.5 sm:flex-1">
-          <Label htmlFor="lockShift">Shift</Label>
+          <Label htmlFor="lockShift">{t('shift')}</Label>
           <Select value={shift} onValueChange={(value) => setShift(value as Shift)}>
             <SelectTrigger id="lockShift" className="w-full sm:w-44">
-              <SelectValue placeholder="Select a shift" />
+              <SelectValue placeholder={t('selectShift')} />
             </SelectTrigger>
             <SelectContent>
               {SHIFTS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
+                <SelectItem key={s} value={s}>
+                  {labels.shift(s)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <Button onClick={handleLock} disabled={busy} className="w-full sm:w-auto">
-          <Lock className="h-4 w-4" /> Lock Shift
+          <Lock className="h-4 w-4" /> {t('lock')}
         </Button>
       </div>
 
       {lockedShifts.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Currently locked</p>
+          <p className="text-sm font-medium">{t('currentlyLocked')}</p>
           <ul className="space-y-2">
             {lockedShifts.map((entry) => {
-              const label = SHIFTS.find((s) => s.value === entry.shift)?.label ?? entry.shift;
               return (
                 <li key={`${entry.date}-${entry.shift}`} className="flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm">
-                  <span>{entry.date} &middot; {label}</span>
+                  <span>{format.date(entry.date)} &middot; {labels.shift(entry.shift)}</span>
                   <Button variant="outline" size="sm" disabled={busy} onClick={() => void toggleLock(entry, 'unlock')}>
-                    <Unlock className="h-4 w-4" /> Unlock
+                    <Unlock className="h-4 w-4" /> {t('unlock')}
                   </Button>
                 </li>
               );

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ export function AcceptBookingDialog({
   onOpenChange: (open: boolean) => void;
   onAccepted: () => void;
 }) {
+  const t = useTranslations('acceptDialog');
   const [assignedTimeSlot, setAssignedTimeSlot] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -33,7 +35,7 @@ export function AcceptBookingDialog({
     e.preventDefault();
 
     if (!assignedTimeSlot.trim()) {
-      toast.error('Please enter a time slot for this request');
+      toast.error(t('needSlot'));
       return;
     }
 
@@ -43,11 +45,11 @@ export function AcceptBookingDialog({
         status: 'accepted',
         assignedTimeSlot: assignedTimeSlot.trim(),
       });
-      toast.success('Request accepted');
+      toast.success(t('success'));
       onOpenChange(false);
       onAccepted();
     } catch {
-      toast.error('Could not accept this request');
+      toast.error(t('error'));
     } finally {
       setSubmitting(false);
     }
@@ -57,25 +59,25 @@ export function AcceptBookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Accept request and assign a time slot</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="assignedTimeSlot">Time Slot</Label>
+            <Label htmlFor="assignedTimeSlot">{t('timeSlot')}</Label>
             <Input
               id="assignedTimeSlot"
               required
-              placeholder="e.g. 8:00 AM - 9:00 AM"
+              placeholder={t('placeholder')}
               value={assignedTimeSlot}
               onChange={(e) => setAssignedTimeSlot(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Pick any specific time within the customer&apos;s selected shift.
+              {t('hint')}
             </p>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Accepting...' : 'Accept Request'}
+              {submitting ? t('submitting') : t('submit')}
             </Button>
           </DialogFooter>
         </form>

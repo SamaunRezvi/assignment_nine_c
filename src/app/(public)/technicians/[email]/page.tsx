@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { getLabels } from '@/i18n/server';
 import { MapPin, PackageSearch } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ServiceCard } from '@/components/shared/service-card';
@@ -21,6 +23,9 @@ export default async function TechnicianProfilePage({ params }: { params: Promis
     notFound();
   }
 
+  const t = await getTranslations('technicianProfile');
+  const labels = await getLabels();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-10 flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
@@ -36,19 +41,19 @@ export default async function TechnicianProfilePage({ params }: { params: Promis
           {technician.area && (
             <p className="flex items-center justify-center gap-1 text-sm text-muted-foreground sm:justify-start">
               <MapPin className="h-3.5 w-3.5" />
-              {technician.area}
+              {labels.area(technician.area)}
             </p>
           )}
           {technician.bio && <p className="max-w-xl text-sm text-muted-foreground">{technician.bio}</p>}
         </div>
       </div>
 
-      <h2 className="mb-4 text-lg font-semibold">Services by {technician.name}</h2>
+      <h2 className="mb-4 text-lg font-semibold">{t('servicesBy', { name: technician.name })}</h2>
 
       {technician.services.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <PackageSearch className="h-10 w-10 text-muted-foreground" />
-          <p className="font-medium">No active services right now</p>
+          <p className="font-medium">{t('noServices')}</p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

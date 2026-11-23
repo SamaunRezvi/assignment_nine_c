@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Receipt, Download } from 'lucide-react';
 import {
   Table,
@@ -14,10 +15,14 @@ import {
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api-client';
 import { downloadInvoice } from '@/lib/download-invoice';
-import { formatCurrency, formatDate } from '@/lib/helpers';
+import { useFormat } from '@/i18n/use-format';
 import type { Payment } from '@/lib/types';
 
 export default function CustomerPaymentsPage() {
+  const t = useTranslations('customerPayments');
+  const tCommon = useTranslations('common');
+  const tBookings = useTranslations('customerBookings');
+  const format = useFormat();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,14 +33,14 @@ export default function CustomerPaymentsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-muted-foreground">Loading payment history...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('loading')}</p>;
 
   if (payments.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-16 text-center">
         <Receipt className="h-10 w-10 text-muted-foreground" />
-        <p className="font-medium">No payments yet</p>
-        <p className="text-sm text-muted-foreground">Your paid bookings will show up here.</p>
+        <p className="font-medium">{t('empty')}</p>
+        <p className="text-sm text-muted-foreground">{t('emptyHint')}</p>
       </div>
     );
   }
@@ -43,20 +48,20 @@ export default function CustomerPaymentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Payment History</h1>
-        <p className="text-muted-foreground">Every payment you have made on FixMate.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Service</TableHead>
-              <TableHead>Technician</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Transaction ID</TableHead>
-              <TableHead>Paid On</TableHead>
-              <TableHead className="text-right">Invoice</TableHead>
+              <TableHead>{tCommon('columns.service')}</TableHead>
+              <TableHead>{tCommon('columns.technician')}</TableHead>
+              <TableHead>{tCommon('columns.amount')}</TableHead>
+              <TableHead>{tCommon('columns.transactionId')}</TableHead>
+              <TableHead>{tCommon('columns.paidOn')}</TableHead>
+              <TableHead className="text-right">{tCommon('columns.invoice')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,17 +69,17 @@ export default function CustomerPaymentsPage() {
               <TableRow key={payment._id}>
                 <TableCell className="font-medium">{payment.serviceTitle}</TableCell>
                 <TableCell>{payment.technicianName}</TableCell>
-                <TableCell>{formatCurrency(payment.amount)}</TableCell>
+                <TableCell>{format.currency(payment.amount)}</TableCell>
                 <TableCell className="font-mono text-xs">{payment.transactionId}</TableCell>
-                <TableCell>{formatDate(payment.paidAt)}</TableCell>
+                <TableCell>{format.date(payment.paidAt)}</TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => downloadInvoice(payment.bookingId).catch(() => toast.error('Could not download the invoice'))}
+                    onClick={() => downloadInvoice(payment.bookingId).catch(() => toast.error(tBookings('invoiceError')))}
                   >
                     <Download className="h-3.5 w-3.5" />
-                    Download
+                    {tCommon('download')}
                   </Button>
                 </TableCell>
               </TableRow>

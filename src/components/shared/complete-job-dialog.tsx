@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,9 @@ export function CompleteJobDialog({
   onOpenChange: (open: boolean) => void;
   onCompleted: () => void;
 }) {
+  const t = useTranslations('completeDialog');
+  const tCommon = useTranslations('common');
+  const tDetail = useTranslations('bookingDetail');
   const [finalAmount, setFinalAmount] = useState(String(booking.basePrice));
   const [photo, setPhoto] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +40,7 @@ export function CompleteJobDialog({
     e.preventDefault();
 
     if (Number(finalAmount) <= 0) {
-      toast.error('Final amount must be greater than zero');
+      toast.error(t('amountPositive'));
       return;
     }
 
@@ -49,11 +53,11 @@ export function CompleteJobDialog({
         finalAmount: Number(finalAmount),
         ...(completionPhoto ? { completionPhoto } : {}),
       });
-      toast.success('Job marked as completed');
+      toast.success(t('success'));
       onOpenChange(false);
       onCompleted();
     } catch {
-      toast.error('Could not complete the job');
+      toast.error(t('error'));
     } finally {
       setSubmitting(false);
     }
@@ -63,11 +67,11 @@ export function CompleteJobDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Mark job as completed</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="finalAmount">Final Amount (USD)</Label>
+            <Label htmlFor="finalAmount">{t('finalAmount')}</Label>
             <Input
               id="finalAmount"
               type="number"
@@ -79,15 +83,15 @@ export function CompleteJobDialog({
           </div>
           <ImageUpload
             id="completion-photo"
-            label="Completion Photo (optional)"
+            label={t('photo')}
             value={photo}
             onChange={setPhoto}
-            alt="Completed job"
+            alt={tDetail('completedAlt')}
             disabled={submitting}
           />
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Saving...' : 'Mark Completed'}
+              {submitting ? tCommon('saving') : t('submit')}
             </Button>
           </DialogFooter>
         </form>

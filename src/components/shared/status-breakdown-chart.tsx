@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { STATUS_LABEL } from '@/lib/helpers';
+import { useTranslations } from 'next-intl';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { Booking, BookingStatus } from '@/lib/types';
 
 const STATUS_COLOR: Record<BookingStatus, string> = {
@@ -16,6 +17,9 @@ const STATUS_COLOR: Record<BookingStatus, string> = {
 };
 
 export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {
+  const t = useTranslations('dashboard.breakdown');
+  const labels = useLabels();
+  const format = useFormat();
   const [hovered, setHovered] = useState<string | null>(null);
 
   const counts = bookings.reduce<Partial<Record<BookingStatus, number>>>((acc, booking) => {
@@ -24,7 +28,7 @@ export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {
   }, {});
 
   const data = (Object.keys(counts) as BookingStatus[]).map((status) => ({
-    name: STATUS_LABEL[status],
+    name: labels.status(status),
     value: counts[status] ?? 0,
     color: STATUS_COLOR[status],
   }));
@@ -34,8 +38,8 @@ export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {
   if (data.length === 0) {
     return (
       <div className="flex h-full min-h-56 flex-col items-center justify-center gap-1 text-center">
-        <p className="text-sm font-medium text-muted-foreground">No bookings yet</p>
-        <p className="text-xs text-muted-foreground/70">A breakdown will appear once jobs come in.</p>
+        <p className="text-sm font-medium text-muted-foreground">{t('empty')}</p>
+        <p className="text-xs text-muted-foreground/70">{t('hint')}</p>
       </div>
     );
   }
@@ -70,8 +74,8 @@ export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold tabular-nums">{active ? active.value : total}</span>
-          <span className="max-w-20 truncate text-center text-xs text-muted-foreground">{active ? active.name : 'Total Jobs'}</span>
+          <span className="text-2xl font-bold tabular-nums">{format.number(active ? active.value : total)}</span>
+          <span className="max-w-20 truncate text-center text-xs text-muted-foreground">{active ? active.name : t('totalJobs')}</span>
         </div>
       </div>
       <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
@@ -84,7 +88,7 @@ export function StatusBreakdownChart({ bookings }: { bookings: Booking[] }) {
           >
             <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
             <span className="truncate text-muted-foreground">{item.name}</span>
-            <span className="ml-auto font-medium tabular-nums">{item.value}</span>
+            <span className="ml-auto font-medium tabular-nums">{format.number(item.value)}</span>
           </li>
         ))}
       </ul>

@@ -13,12 +13,7 @@ export type PaymentStatus = 'unpaid' | 'paid';
 
 export type Shift = 'morning' | 'noon' | 'evening' | 'night';
 
-export const SHIFTS: { value: Shift; label: string }[] = [
-  { value: 'morning', label: 'Morning (8 AM - 12 PM)' },
-  { value: 'noon', label: 'Noon (12 PM - 4 PM)' },
-  { value: 'evening', label: 'Evening (4 PM - 8 PM)' },
-  { value: 'night', label: 'Night (8 PM - 11 PM)' },
-];
+export const SHIFTS: Shift[] = ['morning', 'noon', 'evening', 'night'];
 
 export type ServiceMode = 'Home Visit' | 'Shop Drop-off';
 

@@ -15,37 +15,39 @@ import {
   Timer,
   Star,
 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ServiceCard } from '@/components/shared/service-card';
 import { HeroSlider } from '@/components/shared/hero-slider';
 import { BecomeTechnicianButton } from '@/components/shared/become-technician-button';
+import { getLabels } from '@/i18n/server';
 import type { Service } from '@/lib/types';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const CATEGORY_ICONS = [
-  { label: 'Smartphone', icon: Smartphone },
-  { label: 'Laptop & PC', icon: Laptop },
-  { label: 'AC', icon: AirVent },
-  { label: 'Refrigerator', icon: Refrigerator },
-  { label: 'TV', icon: Tv },
-  { label: 'Washing Machine', icon: WashingMachine },
-  { label: 'Electrical', icon: Zap },
+  { value: 'Smartphone', icon: Smartphone },
+  { value: 'Laptop & PC', icon: Laptop },
+  { value: 'AC', icon: AirVent },
+  { value: 'Refrigerator', icon: Refrigerator },
+  { value: 'TV', icon: Tv },
+  { value: 'Washing Machine', icon: WashingMachine },
+  { value: 'Electrical', icon: Zap },
 ];
 
 const HOW_IT_WORKS = [
-  { icon: Search, title: 'Find a Service', desc: 'Browse verified repair services by category or search for exactly what you need.' },
-  { icon: ClipboardCheck, title: 'Send a Request', desc: 'Share the problem, your address and a preferred date in a quick request form.' },
-  { icon: Wrench, title: 'Technician Fixes It', desc: 'A verified technician accepts the job and keeps you updated at every step.' },
-  { icon: CreditCard, title: 'Pay After Completion', desc: 'Review the final amount and pay securely only once the job is done.' },
-];
+  { icon: Search, key: 'find' },
+  { icon: ClipboardCheck, key: 'request' },
+  { icon: Wrench, key: 'fix' },
+  { icon: CreditCard, key: 'pay' },
+] as const;
 
 const TRUST_POINTS = [
-  { icon: ShieldCheck, label: 'Verified Technicians', value: 'Every provider is reviewed before listing' },
-  { icon: Timer, label: 'Fast Response', value: 'Most requests get a reply within hours' },
-  { icon: Star, label: 'Pay After Service', value: 'No upfront payment, ever' },
-];
+  { icon: ShieldCheck, key: 'verified' },
+  { icon: Timer, key: 'fast' },
+  { icon: Star, key: 'payAfter' },
+] as const;
 
 async function getFeaturedServices(): Promise<Service[]> {
   try {
@@ -59,6 +61,9 @@ async function getFeaturedServices(): Promise<Service[]> {
 
 export default async function HomePage() {
   const services = await getFeaturedServices();
+  const t = await getTranslations('home');
+  const tCommon = await getTranslations('common');
+  const labels = await getLabels();
 
   return (
     <div>
@@ -67,15 +72,14 @@ export default async function HomePage() {
         <div className="relative z-10 mx-auto flex min-h-[32rem] max-w-7xl items-center px-4 py-16 sm:min-h-[36rem] sm:px-6 lg:px-8">
           <div className="max-w-xl space-y-6 [text-shadow:0_2px_14px_rgba(0,20,35,0.55)]">
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-              Broken Device? Get It Fixed by Verified Technicians
+              {t('heroTitle')}
             </h1>
             <p className="text-lg text-primary-foreground/80">
-              Book trusted technicians for phones, laptops, ACs, fridges, TVs and more. Track every
-              step of the job and pay only after the work is complete.
+              {t('heroText')}
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/services">Browse Services</Link>
+                <Link href="/services">{tCommon('browseServices')}</Link>
               </Button>
               <BecomeTechnicianButton />
             </div>
@@ -86,17 +90,17 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-10 flex items-end justify-between">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Featured Services</h2>
-            <p className="mt-2 text-muted-foreground">Newly listed and ready to book</p>
+            <h2 className="text-3xl font-bold tracking-tight">{t('featuredTitle')}</h2>
+            <p className="mt-2 text-muted-foreground">{t('featuredSubtitle')}</p>
           </div>
           <Button variant="outline" asChild className="hidden sm:inline-flex">
-            <Link href="/services">View All</Link>
+            <Link href="/services">{t('viewAll')}</Link>
           </Button>
         </div>
 
         {services.length === 0 ? (
           <p className="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-            No services available yet. Check back soon.
+            {t('noServices')}
           </p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -109,16 +113,16 @@ export default async function HomePage() {
 
       <section className="bg-secondary/40 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">How FixMate Works</h2>
+          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">{t('howTitle')}</h2>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {HOW_IT_WORKS.map((step, i) => (
-              <div key={step.title} className="relative text-center">
+              <div key={step.key} className="relative text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
                   <step.icon className="h-7 w-7" />
                 </div>
-                <p className="mb-1 text-sm font-semibold text-accent">Step {i + 1}</p>
-                <h3 className="mb-2 font-semibold">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.desc}</p>
+                <p className="mb-1 text-sm font-semibold text-accent">{t('step', { step: i + 1 })}</p>
+                <h3 className="mb-2 font-semibold">{t(`steps.${step.key}.title`)}</h3>
+                <p className="text-sm text-muted-foreground">{t(`steps.${step.key}.desc`)}</p>
               </div>
             ))}
           </div>
@@ -126,13 +130,13 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">Popular Categories</h2>
+        <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">{t('categoriesTitle')}</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {CATEGORY_ICONS.map((cat) => (
-            <Link key={cat.label} href={`/services?category=${encodeURIComponent(cat.label)}`}>
+            <Link key={cat.value} href={`/services?category=${encodeURIComponent(cat.value)}`}>
               <Card className="flex flex-col items-center gap-3 p-6 text-center transition-colors hover:border-primary">
                 <cat.icon className="h-8 w-8 text-primary" />
-                <span className="text-sm font-medium">{cat.label}</span>
+                <span className="text-sm font-medium">{labels.category(cat.value)}</span>
               </Card>
             </Link>
           ))}
@@ -141,13 +145,13 @@ export default async function HomePage() {
 
       <section className="bg-secondary/40 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">Why Choose FixMate</h2>
+          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">{t('whyTitle')}</h2>
           <div className="grid gap-6 sm:grid-cols-3">
             {TRUST_POINTS.map((point) => (
-              <Card key={point.label} className="flex flex-col items-center gap-3 p-8 text-center">
+              <Card key={point.key} className="flex flex-col items-center gap-3 p-8 text-center">
                 <point.icon className="h-9 w-9 text-accent" />
-                <h3 className="font-semibold">{point.label}</h3>
-                <p className="text-sm text-muted-foreground">{point.value}</p>
+                <h3 className="font-semibold">{t(`trust.${point.key}.label`)}</h3>
+                <p className="text-sm text-muted-foreground">{t(`trust.${point.key}.value`)}</p>
               </Card>
             ))}
           </div>

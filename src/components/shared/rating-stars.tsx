@@ -1,4 +1,6 @@
+import { useTranslations } from 'next-intl';
 import { Star } from 'lucide-react';
+import { useFormat } from '@/i18n/use-format';
 
 interface RatingStarsProps {
   rating: number;
@@ -7,6 +9,8 @@ interface RatingStarsProps {
 }
 
 export function RatingStars({ rating, reviewCount, size = 'sm' }: RatingStarsProps) {
+  const t = useTranslations('common');
+  const format = useFormat();
   const starSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-5 w-5';
 
   return (
@@ -19,10 +23,10 @@ export function RatingStars({ rating, reviewCount, size = 'sm' }: RatingStarsPro
           />
         ))}
       </div>
-      <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+      <span className="text-sm font-medium">{format.number(rating, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
       {reviewCount !== undefined && (
         <span className="text-xs text-muted-foreground">
-          ({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
+          {t('reviews', { count: reviewCount })}
         </span>
       )}
     </div>

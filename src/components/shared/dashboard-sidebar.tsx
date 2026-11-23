@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Home } from 'lucide-react';
 import { Logo } from './logo';
 import { DASHBOARD_NAV } from '@/lib/nav-config';
 import type { Role } from '@/lib/types';
 
 export function DashboardSidebar({ role, onNavigate }: { role: Role; onNavigate?: () => void }) {
+  const t = useTranslations('nav');
   const pathname = usePathname();
   const items = DASHBOARD_NAV[role];
 
@@ -30,7 +32,7 @@ export function DashboardSidebar({ role, onNavigate }: { role: Role; onNavigate?
               }`}
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              {t(`items.${item.label}`)}
             </Link>
           );
         })}
@@ -40,7 +42,7 @@ export function DashboardSidebar({ role, onNavigate }: { role: Role; onNavigate?
         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
       >
         <Home className="h-4 w-4" />
-        Back to Home
+        {t('backToHome')}
       </Link>
     </div>
   );

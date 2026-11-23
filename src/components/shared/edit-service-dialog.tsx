@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,8 @@ import { api } from '@/lib/api-client';
 import { uploadToImgBB } from '@/lib/imgbb';
 import { CATEGORIES } from '@/lib/types';
 import type { Service } from '@/lib/types';
+import { useLabels } from '@/i18n/use-format';
+import { useErrorText } from '@/i18n/errors';
 
 const SERVICE_MODES = ['Home Visit', 'Shop Drop-off'] as const;
 
@@ -39,6 +42,10 @@ export function EditServiceDialog({
   onOpenChange: (open: boolean) => void;
   onUpdated: () => void;
 }) {
+  const t = useTranslations('serviceForm');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const errorText = useErrorText();
   const [title, setTitle] = useState(service.title);
   const [category, setCategory] = useState(service.category);
   const [description, setDescription] = useState(service.description);
@@ -66,11 +73,11 @@ export function EditServiceDialog({
         ...(imageUrl ? { image: imageUrl } : {}),
       });
 
-      toast.success('Service updated and sent for re-approval');
+      toast.success(t('updated'));
       onOpenChange(false);
       onUpdated();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Could not update the service');
+      toast.error(errorText(error, t('updateError')));
     } finally {
       setSubmitting(false);
     }
@@ -80,17 +87,17 @@ export function EditServiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Edit Service</DialogTitle>
+          <DialogTitle>{t('editTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="edit-title">Title</Label>
+            <Label htmlFor="edit-title">{t('title')}</Label>
             <Input id="edit-title" required value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label>Category</Label>
+              <Label>{t('category')}</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as Service['category'])}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -98,14 +105,14 @@ export function EditServiceDialog({
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c}
+                      {labels.category(c)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Service Mode</Label>
+              <Label>{t('serviceMode')}</Label>
               <Select value={serviceMode} onValueChange={(v) => setServiceMode(v as Service['serviceMode'])}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -113,7 +120,7 @@ export function EditServiceDialog({
                 <SelectContent>
                   {SERVICE_MODES.map((m) => (
                     <SelectItem key={m} value={m}>
-                      {m}
+                      {labels.serviceMode(m)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -122,7 +129,7 @@ export function EditServiceDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="edit-description">Description</Label>
+            <Label htmlFor="edit-description">{t('description')}</Label>
             <Textarea
               id="edit-description"
               required
@@ -134,7 +141,7 @@ export function EditServiceDialog({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="edit-basePrice">Base Price (USD)</Label>
+              <Label htmlFor="edit-basePrice">{t('basePrice')}</Label>
               <Input
                 id="edit-basePrice"
                 type="number"
@@ -145,7 +152,7 @@ export function EditServiceDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="edit-duration">Estimated Duration</Label>
+              <Label htmlFor="edit-duration">{t('estimatedDuration')}</Label>
               <Input
                 id="edit-duration"
                 required
@@ -156,7 +163,7 @@ export function EditServiceDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="edit-area">Service Area</Label>
+            <Label htmlFor="edit-area">{t('serviceArea')}</Label>
             <Input
               id="edit-area"
               required
@@ -167,7 +174,7 @@ export function EditServiceDialog({
 
           <ImageUpload
             id="edit-image"
-            label="Replace Image (optional)"
+            label={t('replaceImage')}
             value={image}
             onChange={setImage}
             currentImage={service.image}
@@ -177,7 +184,7 @@ export function EditServiceDialog({
 
           <DialogFooter>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Saving...' : 'Save Changes'}
+              {submitting ? tCommon('saving') : tCommon('saveChanges')}
             </Button>
           </DialogFooter>
         </form>

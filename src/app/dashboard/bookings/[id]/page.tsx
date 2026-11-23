@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Star, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
@@ -12,11 +13,17 @@ import { BookingTimeline } from '@/components/shared/booking-timeline';
 import { useAuth } from '@/lib/auth-context';
 import { api, ApiError } from '@/lib/api-client';
 import { downloadInvoice } from '@/lib/download-invoice';
-import { formatCurrency, formatDate, dashboardPathForRole, SHIFT_LABEL } from '@/lib/helpers';
+import { dashboardPathForRole } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { Booking } from '@/lib/types';
 
 export default function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const t = useTranslations('bookingDetail');
+  const tCommon = useTranslations('common');
+  const tBookings = useTranslations('customerBookings');
+  const labels = useLabels();
+  const format = useFormat();
   const { user } = useAuth();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,14 +41,14 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
   const backHref = user ? dashboardPathForRole(user.role) : '/dashboard/profile';
 
-  if (loading) return <p className="text-muted-foreground">Loading booking...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('loading')}</p>;
 
   if (notFound || !booking) {
     return (
       <div className="space-y-4">
-        <p className="text-muted-foreground">This booking does not exist or you do not have access to it.</p>
+        <p className="text-muted-foreground">{t('notFound')}</p>
         <Button variant="outline" asChild>
-          <Link href={backHref}>Back to dashboard</Link>
+          <Link href={backHref}>{tCommon('backToDashboard')}</Link>
         </Button>
       </div>
     );
@@ -54,7 +61,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
       <Button variant="ghost" size="sm" asChild className="-ml-2">
         <Link href={backHref}>
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Back
+          {tCommon('back')}
         </Link>
       </Button>
 
@@ -62,17 +69,17 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{booking.serviceTitle}</h1>
           <p className="text-muted-foreground">
-            {viewerRole === 'technician' ? `Requested by ${booking.customerName}` : `Technician: ${booking.technicianName}`}
+            {viewerRole === 'technician' ? t('requestedBy', { name: booking.customerName }) : t('technicianLine', { name: booking.technicianName })}
           </p>
         </div>
         {viewerRole === 'customer' && booking.paymentStatus === 'paid' && (
           <Button
             variant="outline"
             size="sm"
-            onClick={() => downloadInvoice(booking._id).catch(() => toast.error('Could not download the invoice'))}
+            onClick={() => downloadInvoice(booking._id).catch(() => toast.error(tBookings('invoiceError')))}
           >
             <Download className="h-3.5 w-3.5" />
-            Invoice
+            {tCommon('invoice')}
           </Button>
         )}
       </div>
@@ -84,28 +91,28 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
         <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
           <div>
-            <p className="text-muted-foreground">Status</p>
+            <p className="text-muted-foreground">{tCommon('columns.status')}</p>
             <BookingStatusBadge status={booking.status} />
           </div>
           <div>
-            <p className="text-muted-foreground">Payment</p>
+            <p className="text-muted-foreground">{tCommon('columns.payment')}</p>
             <PaymentStatusBadge status={booking.paymentStatus} />
           </div>
           <div>
-            <p className="text-muted-foreground">Preferred Date</p>
-            <p className="font-medium">{formatDate(booking.preferredDate)}</p>
+            <p className="text-muted-foreground">{tCommon('columns.preferredDate')}</p>
+            <p className="font-medium">{format.date(booking.preferredDate)}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Amount</p>
-            <p className="font-medium">{formatCurrency(booking.finalAmount)}</p>
+            <p className="text-muted-foreground">{tCommon('columns.amount')}</p>
+            <p className="font-medium">{format.currency(booking.finalAmount)}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Shift</p>
-            <p className="font-medium">{SHIFT_LABEL[booking.shift]}</p>
+            <p className="text-muted-foreground">{tCommon('columns.shift')}</p>
+            <p className="font-medium">{labels.shift(booking.shift)}</p>
           </div>
           {booking.assignedTimeSlot && (
             <div>
-              <p className="text-muted-foreground">Time Slot</p>
+              <p className="text-muted-foreground">{t('timeSlot')}</p>
               <p className="font-medium">{booking.assignedTimeSlot}</p>
             </div>
           )}
@@ -114,7 +121,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
         {booking.status === 'reschedule-proposed' && booking.proposedDate && booking.proposedShift && (
           <div className="rounded-md border border-orange-200 bg-orange-50 p-3 text-sm">
             <p className="font-medium text-orange-700">
-              Proposed: {formatDate(booking.proposedDate)}, {SHIFT_LABEL[booking.proposedShift]}
+              {t('proposed', { date: format.date(booking.proposedDate), shift: labels.shift(booking.proposedShift) })}
             </p>
             {booking.rescheduleMessage && <p className="mt-1 text-muted-foreground">&quot;{booking.rescheduleMessage}&quot;</p>}
           </div>
@@ -122,33 +129,33 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
         {viewerRole !== 'technician' && (
           <div className="space-y-1 text-sm">
-            <p className="text-muted-foreground">Customer Phone</p>
+            <p className="text-muted-foreground">{t('customerPhone')}</p>
             <p className="font-medium">{booking.customerPhone}</p>
           </div>
         )}
 
         <div className="space-y-1 text-sm">
-          <p className="text-muted-foreground">Address</p>
+          <p className="text-muted-foreground">{tCommon('columns.address')}</p>
           <p className="font-medium">{booking.address}</p>
         </div>
 
         <div className="space-y-1 text-sm">
-          <p className="text-muted-foreground">Problem Description</p>
+          <p className="text-muted-foreground">{t('problemDescription')}</p>
           <p className="whitespace-pre-wrap break-words">{booking.problemDescription}</p>
         </div>
 
         {booking.completionPhoto && (
           <div className="space-y-1 text-sm">
-            <p className="text-muted-foreground">Completion Photo</p>
+            <p className="text-muted-foreground">{t('completionPhoto')}</p>
             <div className="relative h-48 w-full overflow-hidden rounded-lg bg-muted">
-              <Image src={booking.completionPhoto} alt="Completed job" fill className="object-cover" />
+              <Image src={booking.completionPhoto} alt={t('completedAlt')} fill className="object-cover" />
             </div>
           </div>
         )}
 
         {booking.rating && (
           <div className="space-y-1 text-sm">
-            <p className="text-muted-foreground">Customer Rating</p>
+            <p className="text-muted-foreground">{t('customerRating')}</p>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -165,7 +172,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
         {booking.statusHistory && booking.statusHistory.length > 0 && (
           <div className="space-y-2 text-sm">
-            <p className="text-muted-foreground">Job Timeline</p>
+            <p className="text-muted-foreground">{t('timeline')}</p>
             <BookingTimeline statusHistory={booking.statusHistory} />
           </div>
         )}

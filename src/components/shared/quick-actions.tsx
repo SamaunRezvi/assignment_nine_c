@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
@@ -10,9 +11,10 @@ export interface QuickAction {
 }
 
 export function QuickActions({ actions }: { actions: QuickAction[] }) {
+  const t = useTranslations('dashboard');
   return (
     <div>
-      <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Quick Actions</h2>
+      <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t('quickActions')}</h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {actions.map((action) => (
           <Link key={action.href} href={action.href}>

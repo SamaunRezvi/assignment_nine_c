@@ -4,6 +4,16 @@ export interface AppNotification {
   message: string;
   createdAt: string;
   href: string;
+  // Raw event details, so the text can be written in the reader's language.
+  status?: string;
+  serviceTitle?: string;
+  customerName?: string;
+  rating?: number;
+  review?: string;
+  shift?: string;
+  assignedTimeSlot?: string;
+  proposedDate?: string;
+  proposedShift?: string;
 }
 
 export interface NotificationSnapshot {

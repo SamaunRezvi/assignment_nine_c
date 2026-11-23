@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,18 +13,21 @@ import {
 } from '@/components/ui/select';
 import { CATEGORIES } from '@/lib/types';
 import { useState } from 'react';
+import { useLabels } from '@/i18n/use-format';
 
 const SERVICE_MODES = ['Home Visit', 'Shop Drop-off'];
 
 const AREAS = ['Mirpur, Dhaka', 'Dhanmondi, Dhaka'];
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-];
+  { value: 'newest', label: 'newest' },
+  { value: 'price-asc', label: 'priceAsc' },
+  { value: 'price-desc', label: 'priceDesc' },
+] as const;
 
 export function ServiceFilters() {
+  const t = useTranslations('services');
+  const labels = useLabels();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -52,20 +56,20 @@ export function ServiceFilters() {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by title or category"
+          placeholder={t('searchPlaceholder')}
           className="pl-9"
         />
       </form>
 
       <Select value={searchParams.get('category') ?? 'all'} onValueChange={(v) => updateParam('category', v)}>
         <SelectTrigger className="w-full min-w-0">
-          <SelectValue placeholder="Category" />
+          <SelectValue placeholder={t('category')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+          <SelectItem value="all">{t('allCategories')}</SelectItem>
           {CATEGORIES.map((c) => (
             <SelectItem key={c} value={c}>
-              {c}
+              {labels.category(c)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -73,13 +77,13 @@ export function ServiceFilters() {
 
       <Select value={searchParams.get('serviceMode') ?? 'all'} onValueChange={(v) => updateParam('serviceMode', v)}>
         <SelectTrigger className="w-full min-w-0">
-          <SelectValue placeholder="Service Mode" />
+          <SelectValue placeholder={t('serviceMode')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Modes</SelectItem>
+          <SelectItem value="all">{t('allModes')}</SelectItem>
           {SERVICE_MODES.map((m) => (
             <SelectItem key={m} value={m}>
-              {m}
+              {labels.serviceMode(m)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -87,13 +91,13 @@ export function ServiceFilters() {
 
       <Select value={searchParams.get('area') ?? 'all'} onValueChange={(v) => updateParam('area', v)}>
         <SelectTrigger className="w-full min-w-0">
-          <SelectValue placeholder="Area" />
+          <SelectValue placeholder={t('area')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Areas</SelectItem>
+          <SelectItem value="all">{t('allAreas')}</SelectItem>
           {AREAS.map((a) => (
             <SelectItem key={a} value={a}>
-              {a}
+              {labels.area(a)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -101,12 +105,12 @@ export function ServiceFilters() {
 
       <Select value={searchParams.get('sort') ?? 'newest'} onValueChange={(v) => updateParam('sort', v)}>
         <SelectTrigger className="w-full min-w-0">
-          <SelectValue placeholder="Sort by" />
+          <SelectValue placeholder={t('sortBy')} />
         </SelectTrigger>
         <SelectContent>
           {SORT_OPTIONS.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
+              {t(`sort.${opt.label}`)}
             </SelectItem>
           ))}
         </SelectContent>

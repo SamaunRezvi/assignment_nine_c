@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Table,
   TableBody,
@@ -21,20 +22,16 @@ import { Button } from '@/components/ui/button';
 import { BookingStatusBadge, PaymentStatusBadge } from '@/components/shared/status-badges';
 import { BookingDetailDialog } from '@/components/shared/booking-detail-dialog';
 import { api } from '@/lib/api-client';
-import { formatCurrency, formatDate } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { Booking } from '@/lib/types';
 
-const STATUS_FILTERS: { value: string; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'requested', label: 'Requested' },
-  { value: 'accepted', label: 'Accepted' },
-  { value: 'in-progress', label: 'In Progress' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'cancelled', label: 'Cancelled' },
-];
+const STATUS_FILTERS = ['all', 'requested', 'accepted', 'in-progress', 'completed', 'rejected', 'cancelled'] as const;
 
 export default function AdminBookingsPage() {
+  const t = useTranslations('adminBookings');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const format = useFormat();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -62,12 +59,12 @@ export default function AdminBookingsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">All Bookings</h1>
-          <p className="text-muted-foreground">Every repair request across the platform.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Input
-            placeholder="Search customer, technician or service"
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full sm:w-64"
@@ -78,8 +75,8 @@ export default function AdminBookingsPage() {
             </SelectTrigger>
             <SelectContent>
               {STATUS_FILTERS.map((f) => (
-                <SelectItem key={f.value} value={f.value}>
-                  {f.label}
+                <SelectItem key={f} value={f}>
+                  {f === 'all' ? tCommon('all') : labels.status(f)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -88,24 +85,24 @@ export default function AdminBookingsPage() {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading bookings...</p>
+        <p className="text-muted-foreground">{t('loading')}</p>
       ) : bookings.length === 0 ? (
         <div className="rounded-lg border border-dashed p-16 text-center text-muted-foreground">
-          No bookings match this search or filter.
+          {t('empty')}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Service</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Technician</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead className="text-right">Details</TableHead>
+                <TableHead>{tCommon('columns.service')}</TableHead>
+                <TableHead>{tCommon('columns.customer')}</TableHead>
+                <TableHead>{tCommon('columns.technician')}</TableHead>
+                <TableHead>{tCommon('columns.date')}</TableHead>
+                <TableHead>{tCommon('columns.amount')}</TableHead>
+                <TableHead>{tCommon('columns.status')}</TableHead>
+                <TableHead>{tCommon('columns.payment')}</TableHead>
+                <TableHead className="text-right">{tCommon('columns.details')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,8 +111,8 @@ export default function AdminBookingsPage() {
                   <TableCell className="font-medium">{booking.serviceTitle}</TableCell>
                   <TableCell>{booking.customerName}</TableCell>
                   <TableCell>{booking.technicianName}</TableCell>
-                  <TableCell>{formatDate(booking.preferredDate)}</TableCell>
-                  <TableCell>{formatCurrency(booking.finalAmount)}</TableCell>
+                  <TableCell>{format.date(booking.preferredDate)}</TableCell>
+                  <TableCell>{format.currency(booking.finalAmount)}</TableCell>
                   <TableCell>
                     <BookingStatusBadge status={booking.status} />
                   </TableCell>
@@ -124,7 +121,7 @@ export default function AdminBookingsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm" onClick={() => setDetailTarget(booking)}>
-                      View
+                      {tCommon('view')}
                     </Button>
                   </TableCell>
                 </TableRow>

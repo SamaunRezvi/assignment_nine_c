@@ -1,12 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { RequestRepairDialog } from './request-repair-dialog';
 import type { Service } from '@/lib/types';
 
 export function RequestRepairGate({ service }: { service: Service }) {
+  const t = useTranslations('services');
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -19,7 +21,7 @@ export function RequestRepairGate({ service }: { service: Service }) {
         className="w-full sm:w-auto"
         onClick={() => router.push(`/sign-in?redirect=/services/${service._id}`)}
       >
-        Sign In to Request Repair
+        {t('signInToRequest')}
       </Button>
     );
   }
@@ -27,7 +29,7 @@ export function RequestRepairGate({ service }: { service: Service }) {
   if (user.role === 'technician' || user.role === 'admin') {
     return (
       <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
-        Only customers can request a repair.
+        {t('onlyCustomers')}
       </p>
     );
   }

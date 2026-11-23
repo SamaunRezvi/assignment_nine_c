@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { BookingStatusBadge } from '@/components/shared/status-badges';
-import { formatDate } from '@/lib/helpers';
+import { useFormat } from '@/i18n/use-format';
 import type { Booking } from '@/lib/types';
 
 interface RecentJobsListProps {
@@ -10,6 +10,7 @@ interface RecentJobsListProps {
 }
 
 export function RecentJobsList({ bookings, nameField, emptyMessage }: RecentJobsListProps) {
+  const format = useFormat();
   const recent = [...bookings]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
@@ -29,7 +30,7 @@ export function RecentJobsList({ bookings, nameField, emptyMessage }: RecentJobs
           <div className="min-w-0">
             <p className="truncate font-medium">{booking.serviceTitle}</p>
             <p className="truncate text-sm text-muted-foreground">
-              {booking[nameField]} · {formatDate(booking.createdAt)}
+              {booking[nameField]} · {format.date(booking.createdAt)}
             </p>
           </div>
           <BookingStatusBadge status={booking.status} />

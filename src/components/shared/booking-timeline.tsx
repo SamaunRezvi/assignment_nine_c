@@ -1,34 +1,26 @@
 import { Check } from 'lucide-react';
-import { formatDateTime } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { StatusHistoryEntry } from '@/lib/types';
 
-const TIMELINE_STEPS = [
-  { key: 'requested', label: 'Requested' },
-  { key: 'accepted', label: 'Accepted' },
-  { key: 'in-progress', label: 'In Progress' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'paid', label: 'Paid' },
-];
+const TIMELINE_STEPS = ['requested', 'accepted', 'in-progress', 'completed', 'paid'] as const;
 
-const TERMINAL_STEPS: Record<string, { label: string }> = {
-  rejected: { label: 'Rejected' },
-  cancelled: { label: 'Cancelled' },
-};
+const TERMINAL_STEPS = ['rejected', 'cancelled'] as const;
 
 export function BookingTimeline({ statusHistory }: { statusHistory: StatusHistoryEntry[] }) {
+  const labels = useLabels();
+  const format = useFormat();
   const historyByStatus = new Map(statusHistory.map((entry) => [entry.status, entry]));
 
-  const terminalEntry = statusHistory.find((entry) => entry.status in TERMINAL_STEPS);
+  const terminalEntry = statusHistory.find((entry) => (TERMINAL_STEPS as readonly string[]).includes(entry.status));
 
   if (terminalEntry) {
-    const terminal = TERMINAL_STEPS[terminalEntry.status];
     return (
       <div className="flex items-center gap-2 text-sm">
         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
           <Check className="h-3.5 w-3.5" />
         </span>
-        <span className="font-medium text-red-600">{terminal.label}</span>
-        <span className="text-xs text-muted-foreground">{formatDateTime(terminalEntry.changedAt)}</span>
+        <span className="font-medium text-red-600">{labels.status(terminalEntry.status as (typeof TERMINAL_STEPS)[number])}</span>
+        <span className="text-xs text-muted-foreground">{format.dateTime(terminalEntry.changedAt)}</span>
       </div>
     );
   }
@@ -36,25 +28,25 @@ export function BookingTimeline({ statusHistory }: { statusHistory: StatusHistor
   return (
     <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
       {TIMELINE_STEPS.map((step, i) => {
-        const entry = historyByStatus.get(step.key);
+        const entry = historyByStatus.get(step);
         const done = Boolean(entry);
         const isLast = i === TIMELINE_STEPS.length - 1;
 
         return (
-          <div key={step.key} className="flex items-center">
+          <div key={step} className="flex items-center">
             <div className="flex flex-col items-center gap-1">
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
                   done ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}
               >
-                {done ? <Check className="h-3.5 w-3.5" /> : <span className="text-[10px]">{i + 1}</span>}
+                {done ? <Check className="h-3.5 w-3.5" /> : <span className="text-[10px]">{format.number(i + 1)}</span>}
               </span>
               <div className="text-center">
                 <p className={`text-xs ${done ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>
-                  {step.label}
+                  {labels.status(step)}
                 </p>
-                {entry && <p className="text-[10px] text-muted-foreground">{formatDateTime(entry.changedAt)}</p>}
+                {entry && <p className="text-[10px] text-muted-foreground">{format.dateTime(entry.changedAt)}</p>}
               </div>
             </div>
             {!isLast && <div className={`mb-5 h-px w-8 ${done ? 'bg-primary' : 'bg-border'}`} />}

@@ -2,14 +2,19 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth-context';
 import { DashboardSidebar } from '@/components/shared/dashboard-sidebar';
 import { DashboardTopbar } from '@/components/shared/dashboard-topbar';
 import { dashboardPathForRole } from '@/lib/helpers';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { useErrorText } from '@/i18n/errors';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const tCommon = useTranslations('common');
+  const tErrors = useTranslations('errors');
+  const errorText = useErrorText();
   const { user, loading, error, refreshUser } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -30,8 +35,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (error) return (
     <div role="alert" className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-      <p>{error}</p>
-      <Button onClick={() => void refreshUser().catch(() => {})}>Retry loading account</Button>
+      <p>{errorText(error, tErrors('loadAccount'))}</p>
+      <Button onClick={() => void refreshUser().catch(() => {})}>{tCommon('retryAccount')}</Button>
     </div>
   );
 

@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Camera, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getImageValidationError, IMAGE_ACCEPT } from '@/lib/image-validation';
+import { useErrorText } from '@/i18n/errors';
 
 export function ImageUpload({
   id, label, value, onChange, currentImage, alt, disabled, required, avatar = false,
@@ -22,6 +24,9 @@ export function ImageUpload({
   required?: boolean;
   avatar?: boolean;
 }) {
+  const t = useTranslations('imageUpload');
+  const tErrors = useTranslations('errors');
+  const errorText = useErrorText();
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [selection, setSelection] = useState<{ file: File; url: string }>();
@@ -64,7 +69,7 @@ export function ImageUpload({
           onInvalid={(event) => {
             event.preventDefault();
             buttonRef.current?.focus();
-            toast.error('Please choose a photo before saving.');
+            toast.error(t('required'));
           }}
           onChange={(event) => {
             const file = event.target.files?.[0] ?? null;
@@ -73,7 +78,7 @@ export function ImageUpload({
               event.target.value = '';
               setSelection(undefined);
               onChange(null);
-              toast.error(error);
+              toast.error(errorText(error, tErrors('imageType')));
               return;
             }
             setSelection(file ? { file, url: URL.createObjectURL(file) } : undefined);
@@ -83,16 +88,16 @@ export function ImageUpload({
         <div className="flex flex-wrap items-center gap-2">
           <Button ref={buttonRef} type="button" variant="outline" disabled={disabled} onClick={() => inputRef.current?.click()} aria-controls={id}>
             <Camera className="h-4 w-4" />
-            {preview ? 'Change photo' : 'Choose photo'}
+            {preview ? t('change') : t('choose')}
           </Button>
-          {value && <Button type="button" variant="ghost" size="icon" aria-label="Discard selected photo" disabled={disabled} onClick={() => {
+          {value && <Button type="button" variant="ghost" size="icon" aria-label={t('discard')} disabled={disabled} onClick={() => {
             setSelection(undefined);
             onChange(null);
           }}><X className="h-4 w-4" /></Button>}
         </div>
-        {value && <p role="status" className="text-xs font-medium text-primary">New photo ready to save</p>}
+        {value && <p role="status" className="text-xs font-medium text-primary">{t('ready')}</p>}
         <p id={`${id}-help`} className="text-xs text-muted-foreground">
-          JPG, PNG, WebP, or GIF, up to 10 MB. Preview your photo here, then save to upload it.
+          {t('help')}
         </p>
       </div>
     </div>

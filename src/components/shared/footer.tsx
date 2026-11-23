@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Logo } from './logo';
 import { CATEGORIES } from '@/lib/types';
+import { useLabels } from '@/i18n/use-format';
 
 function XIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -38,21 +40,23 @@ function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 const quickLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
-  { href: '/about', label: 'About' },
-  { href: '/faq', label: 'FAQ' },
-];
+  { href: '/', label: 'home' },
+  { href: '/services', label: 'services' },
+  { href: '/about', label: 'about' },
+  { href: '/faq', label: 'faq' },
+] as const;
 
 export function Footer() {
+  const t = useTranslations('footer');
+  const tNav = useTranslations('nav');
+  const labels = useLabels();
   return (
     <footer className="border-t bg-sidebar text-sidebar-foreground">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="space-y-3">
           <Logo />
           <p className="text-sm text-sidebar-foreground/70">
-            Verified technicians for every device and appliance. Track every job, pay only after it is
-            done.
+            {t('tagline')}
           </p>
           <div className="flex gap-3 pt-2">
             <a href="#" aria-label="Facebook" className="text-sidebar-foreground/70 hover:text-sidebar-primary">
@@ -72,13 +76,13 @@ export function Footer() {
 
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-sidebar-foreground/90">
-            Quick Links
+            {t('quickLinks')}
           </h3>
           <ul className="space-y-2">
             {quickLinks.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="text-sm text-sidebar-foreground/70 hover:text-sidebar-primary">
-                  {link.label}
+                  {tNav(link.label)}
                 </Link>
               </li>
             ))}
@@ -87,7 +91,7 @@ export function Footer() {
 
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-sidebar-foreground/90">
-            Popular Categories
+            {t('popularCategories')}
           </h3>
           <ul className="space-y-2">
             {CATEGORIES.slice(0, 5).map((category) => (
@@ -96,7 +100,7 @@ export function Footer() {
                   href={`/services?category=${encodeURIComponent(category)}`}
                   className="text-sm text-sidebar-foreground/70 hover:text-sidebar-primary"
                 >
-                  {category}
+                  {labels.category(category)}
                 </Link>
               </li>
             ))}
@@ -105,7 +109,7 @@ export function Footer() {
 
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-sidebar-foreground/90">
-            Contact
+            {t('contact')}
           </h3>
           <ul className="space-y-3 text-sm text-sidebar-foreground/70">
             <li className="flex items-center gap-2">
@@ -118,14 +122,14 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0" />
-              Dhaka, Bangladesh
+              {t('location')}
             </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-sidebar-border px-4 py-5 text-center text-xs text-sidebar-foreground/60 sm:px-6 lg:px-8">
-        &copy; 2026 FixMate. All rights reserved.
+        {t('rights')}
       </div>
     </footer>
   );

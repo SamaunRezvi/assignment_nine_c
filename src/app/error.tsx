@@ -1,10 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const t = useTranslations('errorPage');
+  const tCommon = useTranslations('common');
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -15,12 +19,12 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <AlertTriangle className="h-12 w-12 text-destructive" strokeWidth={1.5} />
       </div>
       <div>
-        <h1 className="text-2xl font-bold">Something went wrong</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <p className="mt-1 text-muted-foreground">
-          An unexpected error occurred while loading this page. You can try again.
+          {t('text')}
         </p>
       </div>
-      <Button onClick={() => reset()}>Try Again</Button>
+      <Button onClick={() => reset()}>{tCommon('tryAgain')}</Button>
     </div>
   );
 }

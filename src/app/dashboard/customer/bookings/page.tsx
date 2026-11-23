@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CalendarX, ChevronDown, ChevronUp, Star, Download } from 'lucide-react';
@@ -27,10 +28,14 @@ import { BookingTimeline } from '@/components/shared/booking-timeline';
 import { RateJobDialog } from '@/components/shared/rate-job-dialog';
 import { api } from '@/lib/api-client';
 import { downloadInvoice } from '@/lib/download-invoice';
-import { formatCurrency, formatDate, SHIFT_LABEL } from '@/lib/helpers';
+import { useFormat, useLabels } from '@/i18n/use-format';
 import type { Booking } from '@/lib/types';
 
 export default function CustomerBookingsPage() {
+  const t = useTranslations('customerBookings');
+  const tCommon = useTranslations('common');
+  const labels = useLabels();
+  const format = useFormat();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
@@ -57,11 +62,11 @@ export default function CustomerBookingsPage() {
     if (!cancelTarget) return;
     try {
       await api.patch(`/api/bookings/${cancelTarget._id}/cancel`);
-      toast.success('Booking cancelled');
+      toast.success(t('cancelled'));
       setCancelTarget(null);
       loadBookings();
     } catch {
-      toast.error('Could not cancel this booking');
+      toast.error(t('cancelError'));
     }
   }
 
@@ -69,11 +74,11 @@ export default function CustomerBookingsPage() {
     setRespondingId(booking._id);
     try {
       await api.patch(`/api/bookings/${booking._id}/reschedule-response`, { accept });
-      toast.success(accept ? 'New time accepted' : 'Reschedule rejected');
+      toast.success(accept ? t('newTimeAccepted') : t('rescheduleRejected'));
       setRejectRescheduleTarget(null);
       loadBookings();
     } catch {
-      toast.error('Could not respond to this reschedule proposal');
+      toast.error(t('respondError'));
     } finally {
       setRespondingId(null);
     }
@@ -87,7 +92,7 @@ export default function CustomerBookingsPage() {
       });
       window.location.assign(url);
     } catch {
-      toast.error('Could not start the payment');
+      toast.error(t('payError'));
       setPayingId(null);
     }
   }
@@ -96,19 +101,19 @@ export default function CustomerBookingsPage() {
     try {
       await downloadInvoice(booking._id);
     } catch {
-      toast.error('Could not download the invoice');
+      toast.error(t('invoiceError'));
     }
   }
 
-  if (loading) return <p className="text-muted-foreground">Loading your bookings...</p>;
+  if (loading) return <p className="text-muted-foreground">{t('loading')}</p>;
 
   if (bookings.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-16 text-center">
         <CalendarX className="h-10 w-10 text-muted-foreground" />
-        <p className="font-medium">You have not requested any repairs yet</p>
+        <p className="font-medium">{t('empty')}</p>
         <Button asChild>
-          <Link href="/services">Browse Services</Link>
+          <Link href="/services">{tCommon('browseServices')}</Link>
         </Button>
       </div>
     );
@@ -117,21 +122,21 @@ export default function CustomerBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Bookings</h1>
-        <p className="text-muted-foreground">Track and manage your repair requests.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Service</TableHead>
-              <TableHead>Technician</TableHead>
-              <TableHead>Preferred Date</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>{tCommon('columns.service')}</TableHead>
+              <TableHead>{tCommon('columns.technician')}</TableHead>
+              <TableHead>{tCommon('columns.preferredDate')}</TableHead>
+              <TableHead>{tCommon('columns.amount')}</TableHead>
+              <TableHead>{tCommon('columns.status')}</TableHead>
+              <TableHead>{tCommon('columns.payment')}</TableHead>
+              <TableHead className="text-right">{tCommon('columns.action')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -149,8 +154,8 @@ export default function CustomerBookingsPage() {
                       <span className="font-medium">{booking.serviceTitle}</span>
                     </TableCell>
                     <TableCell>{booking.technicianName}</TableCell>
-                    <TableCell>{formatDate(booking.preferredDate)}</TableCell>
-                    <TableCell>{formatCurrency(booking.finalAmount)}</TableCell>
+                    <TableCell>{format.date(booking.preferredDate)}</TableCell>
+                    <TableCell>{format.currency(booking.finalAmount)}</TableCell>
                     <TableCell>
                       <BookingStatusBadge status={booking.status} />
                     </TableCell>
@@ -161,7 +166,7 @@ export default function CustomerBookingsPage() {
                       <div className="flex items-center justify-end gap-2">
                         {booking.status === 'requested' && (
                           <Button variant="outline" size="sm" onClick={() => setCancelTarget(booking)}>
-                            Cancel
+                            {tCommon('cancel')}
                           </Button>
                         )}
                         {booking.status === 'reschedule-proposed' && (
@@ -171,42 +176,42 @@ export default function CustomerBookingsPage() {
                               disabled={respondingId === booking._id}
                               onClick={() => handleRescheduleResponse(booking, true)}
                             >
-                              Accept New Time
+                              {t('acceptNewTime')}
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => setRejectRescheduleTarget(booking)}>
-                              Reject
+                              {tCommon('reject')}
                             </Button>
                           </>
                         )}
                         {booking.status === 'completed' && booking.paymentStatus === 'unpaid' && (
                           <Button size="sm" disabled={payingId === booking._id} onClick={() => handlePayNow(booking)}>
-                            {payingId === booking._id ? 'Redirecting...' : 'Pay Now'}
+                            {payingId === booking._id ? t('redirecting') : t('payNow')}
                           </Button>
                         )}
                         {canRate && !booking.rating && (
                           <Button variant="outline" size="sm" onClick={() => setRateTarget(booking)}>
-                            Rate this job
+                            {t('rate')}
                           </Button>
                         )}
                         {canRate && booking.rating && (
                           <span className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                            {booking.rating}
+                            {format.number(booking.rating)}
                           </span>
                         )}
                         {booking.paymentStatus === 'paid' && (
                           <Button variant="outline" size="sm" onClick={() => handleDownloadInvoice(booking)}>
                             <Download className="h-3.5 w-3.5" />
-                            Invoice
+                            {tCommon('invoice')}
                           </Button>
                         )}
                         <Button variant="outline" size="sm" asChild>
-                          <Link href={`/dashboard/bookings/${booking._id}`}>Open</Link>
+                          <Link href={`/dashboard/bookings/${booking._id}`}>{tCommon('open')}</Link>
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          aria-label={expanded ? 'Hide booking details' : 'Show booking details'}
+                          aria-label={expanded ? t('hideDetails') : t('showDetails')}
                           onClick={() => setExpandedId(expanded ? null : booking._id)}
                         >
                           {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -220,16 +225,16 @@ export default function CustomerBookingsPage() {
                         {booking.statusHistory && booking.statusHistory.length > 0 ? (
                           <BookingTimeline statusHistory={booking.statusHistory} />
                         ) : (
-                          <p className="text-sm text-muted-foreground">No timeline available for this booking.</p>
+                          <p className="text-sm text-muted-foreground">{t('noTimeline')}</p>
                         )}
-                        <p className="mt-2 text-sm text-muted-foreground">Shift: {SHIFT_LABEL[booking.shift]}</p>
+                        <p className="mt-2 text-sm text-muted-foreground">{t('shiftLine', { shift: labels.shift(booking.shift) })}</p>
                         {booking.assignedTimeSlot && (
-                          <p className="text-sm text-muted-foreground">Confirmed time slot: {booking.assignedTimeSlot}</p>
+                          <p className="text-sm text-muted-foreground">{t('slotLine', { slot: booking.assignedTimeSlot })}</p>
                         )}
                         {booking.status === 'reschedule-proposed' && booking.proposedDate && booking.proposedShift && (
                           <div className="mt-2 rounded-md border border-orange-200 bg-orange-50 p-3 text-sm">
                             <p className="font-medium text-orange-700">
-                              Technician proposed {formatDate(booking.proposedDate)}, {SHIFT_LABEL[booking.proposedShift]}
+                              {t('proposed', { date: format.date(booking.proposedDate), shift: labels.shift(booking.proposedShift) })}
                             </p>
                             {booking.rescheduleMessage && <p className="mt-1 text-muted-foreground">&quot;{booking.rescheduleMessage}&quot;</p>}
                           </div>
@@ -250,17 +255,17 @@ export default function CustomerBookingsPage() {
       <Dialog open={!!cancelTarget} onOpenChange={(open) => !open && setCancelTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel this booking?</DialogTitle>
+            <DialogTitle>{t('cancelTitle')}</DialogTitle>
             <DialogDescription>
-              This will cancel your request for {cancelTarget?.serviceTitle}. This cannot be undone.
+              {t('cancelText', { service: cancelTarget?.serviceTitle ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCancelTarget(null)}>
-              Keep Booking
+              {t('keepBooking')}
             </Button>
             <Button variant="destructive" onClick={handleCancel}>
-              Cancel Booking
+              {t('confirmCancel')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -269,21 +274,21 @@ export default function CustomerBookingsPage() {
       <Dialog open={!!rejectRescheduleTarget} onOpenChange={(open) => !open && setRejectRescheduleTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reject this new time?</DialogTitle>
+            <DialogTitle>{t('rejectTitle')}</DialogTitle>
             <DialogDescription>
-              This will reject the technician&apos;s proposed time for {rejectRescheduleTarget?.serviceTitle}. The request will be marked as rejected and cannot be undone.
+              {t('rejectText', { service: rejectRescheduleTarget?.serviceTitle ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectRescheduleTarget(null)}>
-              Keep Reviewing
+              {t('keepReviewing')}
             </Button>
             <Button
               variant="destructive"
               disabled={respondingId === rejectRescheduleTarget?._id}
               onClick={() => rejectRescheduleTarget && handleRescheduleResponse(rejectRescheduleTarget, false)}
             >
-              Reject
+              {tCommon('reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

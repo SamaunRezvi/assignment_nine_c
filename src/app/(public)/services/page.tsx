@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { PackageSearch } from 'lucide-react';
 import { ServiceCard } from '@/components/shared/service-card';
 import { ServiceFilters } from '@/components/shared/service-filters';
@@ -40,13 +41,14 @@ export default async function ServicesPage({
 }) {
   const params = await searchParams;
   const { services, page, totalPages } = await getServices(params);
+  const t = await getTranslations('services');
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Browse Services</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
         <p className="mt-2 text-muted-foreground">
-          Search, filter and sort verified repair services across every category.
+          {t('subtitle')}
         </p>
       </div>
 
@@ -57,8 +59,8 @@ export default async function ServicesPage({
       {services.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <PackageSearch className="h-10 w-10 text-muted-foreground" />
-          <p className="font-medium">No services match your search</p>
-          <p className="text-sm text-muted-foreground">Try a different keyword, category or filter.</p>
+          <p className="font-medium">{t('noMatch')}</p>
+          <p className="text-sm text-muted-foreground">{t('noMatchHint')}</p>
         </div>
       ) : (
         <>
