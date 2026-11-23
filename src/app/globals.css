@@ -135,6 +135,16 @@
   body[data-scroll-locked] {
     overflow: clip !important;
   }
+  /* iOS Safari sizes a date input's internal segments and calendar glyph
+     outside the box model, so width:100% still overflows its container.
+     Forcing border-box containment keeps it inside its parent on mobile. */
+  input[type='date'] {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  input[type='date']::-webkit-date-and-time-value {
+    text-align: left;
+  }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
