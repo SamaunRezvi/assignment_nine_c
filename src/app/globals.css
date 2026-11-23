@@ -135,21 +135,21 @@
   body[data-scroll-locked] {
     overflow: clip !important;
   }
-  /* iOS Safari's calendar-picker-indicator button inside a date input adds
-     its own margin on top of the field's border-box width, so the input
-     renders a few pixels wider than its container no matter what width is
-     set on the input itself. Zeroing the icon's margin/padding removes that
-     extra width so the field actually stays inside its parent. */
+  /* iOS Safari draws date inputs with its native control, which ignores the
+     CSS width and height and renders wider than the container. Dropping the
+     native appearance makes it honour the box we give it; tapping it still
+     opens the iOS date picker. */
   input[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-  }
-  input[type='date']::-webkit-calendar-picker-indicator {
-    margin: 0;
-    padding: 0;
+    min-width: 0;
   }
   input[type='date']::-webkit-date-and-time-value {
+    min-height: 1.5em;
     text-align: left;
   }
   /* Sonner's own mobile breakpoint sets left:0; right:0; width:100% on the
