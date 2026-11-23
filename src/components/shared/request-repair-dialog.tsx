@@ -32,21 +32,35 @@ export function RequestRepairDialog({ service }: { service: Service }) {
   const [problemDescription, setProblemDescription] = useState('');
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
+  const [shiftError, setShiftError] = useState('');
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
+  const [lockedShifts, setLockedShifts] = useState<{ date: string; shift: Shift }[]>([]);
 
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     api
-      .get<{ unavailableDates: string[] }>(`/api/technicians/${encodeURIComponent(service.technicianEmail)}`)
-      .then((data) => setUnavailableDates(data.unavailableDates ?? []))
-      .catch(() => setUnavailableDates([]));
+      .get<{ unavailableDates: string[]; lockedShifts: { date: string; shift: Shift }[] }>(
+        `/api/technicians/${encodeURIComponent(service.technicianEmail)}`
+      )
+      .then((data) => {
+        setUnavailableDates(data.unavailableDates ?? []);
+        setLockedShifts(data.lockedShifts ?? []);
+      })
+      .catch(() => {
+        setUnavailableDates([]);
+        setLockedShifts([]);
+      });
   }, [service.technicianEmail]);
+
+  const isShiftLocked = (date: string, s: Shift | '') =>
+    !!s && lockedShifts.some((entry) => entry.date === date && entry.shift === s);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     setDateError('');
+    setShiftError('');
 
     if (unavailableDates.includes(preferredDate)) {
       setDateError('The technician is not available on this date. Please choose another date.');
@@ -54,7 +68,12 @@ export function RequestRepairDialog({ service }: { service: Service }) {
     }
 
     if (!shift) {
-      setError('Please select a shift');
+      setShiftError('Please select a shift');
+      return;
+    }
+
+    if (isShiftLocked(preferredDate, shift)) {
+      setShiftError('This shift is fully booked. Please choose another shift or date.');
       return;
     }
 
@@ -140,24 +159,42 @@ export function RequestRepairDialog({ service }: { service: Service }) {
                   onChange={(e) => {
                     setPreferredDate(e.target.value);
                     setDateError(unavailableDates.includes(e.target.value) ? 'The technician is not available on this date. Please choose another date.' : '');
+                    setShiftError(
+                      isShiftLocked(e.target.value, shift)
+                        ? 'This shift is fully booked. Please choose another shift or date.'
+                        : ''
+                    );
                   }}
                 />
                 {dateError && <p className="text-sm text-destructive">{dateError}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="shift">Preferred Shift</Label>
-                <Select required value={shift} onValueChange={(value) => setShift(value as Shift)}>
+                <Select
+                  required
+                  value={shift}
+                  onValueChange={(value) => {
+                    setShift(value as Shift);
+                    setShiftError(
+                      isShiftLocked(preferredDate, value as Shift)
+                        ? 'This shift is fully booked. Please choose another shift or date.'
+                        : ''
+                    );
+                  }}
+                >
                   <SelectTrigger id="shift" className="w-full">
                     <SelectValue placeholder="Select a shift" />
                   </SelectTrigger>
                   <SelectContent>
                     {SHIFTS.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
+                      <SelectItem key={s.value} value={s.value} disabled={isShiftLocked(preferredDate, s.value)}>
                         {s.label}
+                        {isShiftLocked(preferredDate, s.value) ? ' (fully booked)' : ''}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {shiftError && <p className="text-sm text-destructive">{shiftError}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="problemDescription">Problem Description</Label>
