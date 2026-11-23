@@ -138,6 +138,11 @@ export default function SignUpPage() {
 
         <GoogleSignInButton callbackURL={`${CLIENT_URL}${dashboardPathForRole('customer')}`} />
 
+        <p className="text-center text-xs text-muted-foreground">
+          Google sign-up always creates a customer account. If you want to work as a technician,
+          use the form above and choose Technician instead.
+        </p>
+
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
           <Link href="/sign-in" className="font-medium text-primary">

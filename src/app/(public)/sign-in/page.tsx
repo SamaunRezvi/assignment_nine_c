@@ -110,6 +110,15 @@ export default function SignInPage() {
 
         <GoogleSignInButton callbackURL={`${CLIENT_URL}/sign-in${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`} />
 
+        <p className="text-center text-xs text-muted-foreground">
+          Signing in with Google for the first time creates a customer account. To work as a
+          technician, create your account with{' '}
+          <Link href="/sign-up" className="font-medium text-primary">
+            Sign Up
+          </Link>{' '}
+          and choose Technician first, then Google sign-in will keep using that account.
+        </p>
+
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
           <Link href="/sign-up" className="font-medium text-primary">
