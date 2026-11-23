@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   CalendarCheck,
+  CalendarX,
   Receipt,
   PlusCircle,
   Wrench,
@@ -31,6 +32,7 @@ export const DASHBOARD_NAV: Record<Role, NavItem[]> = {
     { href: '/dashboard/technician/add-service', label: 'Add Service', icon: PlusCircle },
     { href: '/dashboard/technician/my-services', label: 'My Services', icon: Wrench },
     { href: '/dashboard/technician/requests', label: 'Manage Requests', icon: ClipboardList },
+    { href: '/dashboard/technician/availability', label: 'Availability', icon: CalendarX },
     { href: '/dashboard/profile', label: 'Update Profile', icon: UserPen },
   ],
   admin: [
