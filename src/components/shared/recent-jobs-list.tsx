@@ -16,7 +16,7 @@ export function RecentJobsList({ bookings, nameField, emptyMessage }: RecentJobs
 
   if (recent.length === 0) {
     return (
-      <Card className="flex h-full min-h-56 items-center justify-center p-6 text-sm text-muted-foreground">
+      <Card className="flex min-h-56 items-center justify-center p-6 text-sm text-muted-foreground">
         {emptyMessage}
       </Card>
     );

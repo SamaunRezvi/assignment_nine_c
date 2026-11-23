@@ -49,7 +49,7 @@ export default function TechnicianOverviewPage() {
         <RatingOverviewCard averageRating={stats?.averageRating ?? null} reviewCount={stats?.reviewCount ?? 0} />
       </div>
       <QuickActions actions={QUICK_ACTIONS} />
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-4">
         <div className="min-w-0 space-y-3 lg:col-span-2">
           <h2 className="truncate px-1 text-sm font-semibold text-muted-foreground">Recent Jobs</h2>
           <RecentJobsList bookings={bookings} nameField="customerName" emptyMessage="No repair requests yet." />
