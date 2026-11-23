@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import {
@@ -29,12 +29,27 @@ export function RequestRepairDialog({ service }: { service: Service }) {
   const [preferredDate, setPreferredDate] = useState('');
   const [problemDescription, setProblemDescription] = useState('');
   const [error, setError] = useState('');
+  const [dateError, setDateError] = useState('');
+  const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
 
   const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    api
+      .get<{ unavailableDates: string[] }>(`/api/technicians/${encodeURIComponent(service.technicianEmail)}`)
+      .then((data) => setUnavailableDates(data.unavailableDates ?? []))
+      .catch(() => setUnavailableDates([]));
+  }, [service.technicianEmail]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setDateError('');
+
+    if (unavailableDates.includes(preferredDate)) {
+      setDateError('The technician is not available on this date. Please choose another date.');
+      return;
+    }
 
     if (problemDescription.trim().length < 20) {
       setError('Problem description must be at least 20 characters');
@@ -114,8 +129,12 @@ export function RequestRepairDialog({ service }: { service: Service }) {
                   required
                   min={today}
                   value={preferredDate}
-                  onChange={(e) => setPreferredDate(e.target.value)}
+                  onChange={(e) => {
+                    setPreferredDate(e.target.value);
+                    setDateError(unavailableDates.includes(e.target.value) ? 'The technician is not available on this date. Please choose another date.' : '');
+                  }}
                 />
+                {dateError && <p className="text-sm text-destructive">{dateError}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="problemDescription">Problem Description</Label>
